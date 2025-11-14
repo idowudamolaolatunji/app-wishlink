@@ -199,6 +199,19 @@ export type TransactionItemProps = {
     handleClick: Function;
 };
 
+export type ContributorListType = {
+    data: ContributorType[];
+    title?: string;
+    loading?: boolean;
+    emptyListMessage?: string;
+};
+
+export type ContributorItemProps = {
+    item: ContributorType;
+    index: number;
+    handleClick: Function;
+};
+
 
 export type ResponseType = {
     success: boolean;
@@ -230,27 +243,36 @@ export type WishInsightType = {
     iconbgColor?: string;
 }
 
+
 export type TransactionType = {
     id?: string;
-    name: string;
     type: string;
     amount: number;
-    date: Date | Timestamp | string;
     description?: string;
-    image?: any;
-    uid?: string;
+    refId?: string;
+    uid: string;
+    wishId?: string;
+    status: string;
+    currency: string;
+    // paidAt: Date | Timestamp | string;
+    paidAt: string;
 };
 
 
 export type ContributorType = {
     id?: string;
     name: string;
-    type: string;
+    email: string;
     amount: number;
-    date: Date | Timestamp | string;
-    description?: string;
+    message?: string;
     image?: any;
+    isAnonymous?: boolean;
     uid?: string;
+    wishId?: string;
+    transactionId?: string;
+    refId?: string;
+    createdAt: Date | Timestamp | string;
+    // createdAt: string;
 }
 
 export type WishItemType = {
@@ -264,7 +286,7 @@ export type WishItemType = {
     description?: string;
     contributorCount?: number;
     goalAmount?: number;
-    amountRecieved?: number;
+    amountReceived?: number;
     created?: Date;
     active?: boolean;
     isCompleted?: boolean;
@@ -279,7 +301,7 @@ export type WishlistType = {
     totalWishItems?: number;
     totalContributors?: number;
     totalGoalAmount?: number;
-    totalAmountRecieved?: number;
+    totalAmountReceived?: number;
     uid?: string;
     created?: Date;
     active?: boolean;

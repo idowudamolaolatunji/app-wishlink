@@ -1,11 +1,11 @@
 import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
 import ConfettiEL from "@/components/ConfettiEL";
+import ContributionList from "@/components/ContributionList";
 import Loading from "@/components/Loading";
 import ModalWrapper from "@/components/ModalWrapper";
 import Rangebar from "@/components/Rangebar";
 import ScreenHeader from "@/components/ScreenHeader";
-import TransactionList from "@/components/TransactionList";
 import Typography from "@/components/Typography";
 import { BaseColors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAppContext } from "@/contexts/AppContext";
@@ -15,10 +15,11 @@ import { useTheme } from "@/hooks/useTheme";
 import { getFilePath } from "@/services/imageService";
 import { calculatePercentage, formatCurrency } from "@/utils/helpers";
 import { scale, verticalScale } from "@/utils/styling";
-import { WishItemType } from "@/utils/types";
+import { ContributorType, WishItemType } from "@/utils/types";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { limit, where } from "firebase/firestore";
+import LottieView from "lottie-react-native";
 import * as Icons from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
 import { Platform, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
@@ -35,6 +36,7 @@ export default function wishItemDetailModal() {
 
     // ROUTE PARAMS DATA COMING FROM PARENT COMPONENT
     const params: {
+        id?: string;
         slug: string;
         title: string;
         isnew?: string;
@@ -50,11 +52,16 @@ export default function wishItemDetailModal() {
         (user?.uid && params?.slug) ? [where("uid", "==", user.uid), where("slug", "==", params?.slug), limit(1)] : [],
     );
     const item = data[0] as WishItemType;
-    const percentage = calculatePercentage(item?.amountRecieved ?? 0, item?.goalAmount ?? 0);
+    const percentage = calculatePercentage(item?.amountReceived ?? 0, item?.goalAmount ?? 0);
+
+    const { data: contributors, loading: contributorLoading, refetch: refetchContributor } = useFetchData<ContributorType>(
+        "contributors", (user?.uid && params?.id) ? [where("uid", "==", user?.uid), where("wishId", "==", params?.id)] : [],
+    );
 
     const handleRefresh = function() {
 		setRefreshing(true);
 		refetchWish();
+		refetchContributor();
     	setRefreshing(false);
 	}
     
@@ -73,7 +80,7 @@ export default function wishItemDetailModal() {
                 images: item?.images,
                 description: item?.description,
                 goalAmount: item?.goalAmount,
-                amountRecieved: item?.amountRecieved,
+                amountReceived: item?.amountReceived,
                 wishlistId: item?.wishlistId,
                 isCompleted: `${item?.isCompleted}`
             }
@@ -185,7 +192,7 @@ export default function wishItemDetailModal() {
 
                                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                                     <Typography fontFamily="urbanist-semibold" size={verticalScale(isIOS ? 24 : 28)} color={Colors.primaryLight}>{formatCurrency(item?.goalAmount ?? 0)}</Typography>
-                                    <Typography fontFamily="urbanist-semibold" size={verticalScale(isIOS ? 19 : 21)} color={BaseColors.neutral500}>{formatCurrency(item?.amountRecieved ?? 0)} Funded</Typography>
+                                    <Typography fontFamily="urbanist-semibold" size={verticalScale(isIOS ? 19 : 21)} color={BaseColors.neutral500}>{formatCurrency(item?.amountReceived ?? 0)} Funded</Typography>
                                 </View>
 
                                 <View style={[styles.progressCard, { backgroundColor: Colors.cardBackground }]}>
@@ -196,9 +203,18 @@ export default function wishItemDetailModal() {
     
                                     <Rangebar value={percentage} />
                                     
-                                    <View style={{ flexDirection: "row", gap: 3 }}>
-                                        <Icons.UsersThreeIcon size={verticalScale(20)} color={BaseColors.neutral500} />
-                                        <Typography fontFamily="urbanist-medium" size={verticalScale(isIOS ? 17 : 19)} color={BaseColors.neutral500}>contributor{item?.contributorCount === 1 ? "" : "s"}</Typography>
+                                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                        <View style={{ flexDirection: "row", gap: 3 }}>
+                                            <Icons.UsersThreeIcon size={verticalScale(20)} color={BaseColors.neutral500} />
+                                            <Typography fontFamily="urbanist-medium" size={verticalScale(isIOS ? 17 : 19)} color={BaseColors.neutral500}>{item?.contributorCount} Contributor{item?.contributorCount === 1 ? "" : "s"}</Typography>
+                                        </View>
+
+                                        {item?.isCompleted ? (
+                                            <View style={{ flexDirection: "row", alignItems: "center", gap: spacingX._7 }}>
+                                                <Typography fontFamily="urbanist-bold" size={verticalScale(isIOS ? 18 : 20.5)} color={BaseColors.primaryLight}>Completed</Typography>
+                                                <LottieView source={require("@/assets/lottie/popper-big.json")} loop autoPlay style={{ width: 24, height: 24, marginTop: -7 }} />
+                                            </View>
+                                        ) : null}
                                     </View>
                                 </View>
 
@@ -210,20 +226,22 @@ export default function wishItemDetailModal() {
                                     </Typography>
                                 </View>
 
-                                <Button
-                                    onPress={handleEditAction}
-                                    disabled={item?.isCompleted}
-                                    style={{ backgroundColor: BaseColors.brown, marginTop: -spacingY._10, flexDirection: "row", alignItems: "center", gap: spacingY._5, }}
-                                >
-                                    <Icons.PencilSimpleLineIcon color={BaseColors.white} weight="regular" size={verticalScale(24)} />
-                                    <Typography size={isIOS ? 20 : 22} color={BaseColors.white} fontFamily="urbanist-semibold">Modify this Wish</Typography>
-                                </Button>
+                                {!item?.isCompleted ? (
+                                    <Button
+                                        onPress={handleEditAction}
+                                        disabled={item?.isCompleted}
+                                        style={{ backgroundColor: BaseColors.brown, marginTop: -spacingY._10, flexDirection: "row", alignItems: "center", gap: spacingY._5, }}
+                                    >
+                                        <Icons.PencilSimpleLineIcon color={BaseColors.white} weight="regular" size={verticalScale(24)} />
+                                        <Typography size={isIOS ? 20 : 22} color={BaseColors.white} fontFamily="urbanist-semibold">Modify this Wish</Typography>
+                                    </Button>
+                                ) : null}
                             </View>
 
-                            <TransactionList
-                                title="Contributions"
-                                data={[]}
-                                loading={false}
+                            <ContributionList
+                                title="Contributions / Givers"
+                                data={contributors as ContributorType[]}
+                                loading={contributorLoading}
                                 emptyListMessage="No contribution yet!"
                             />
                         </React.Fragment>
@@ -291,7 +309,7 @@ const styles = StyleSheet.create({
     displayDetails: {
         flex: 1,
         gap: spacingY._25,
-        marginBottom: spacingY._25,
+        marginBottom: spacingY._35,
     },
     progressCard: {
         padding: spacingY._10,

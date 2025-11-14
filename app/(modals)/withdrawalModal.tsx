@@ -9,7 +9,7 @@ export default function WithdrawalModal() {
 	return (
 		<ModalWrapper>
 			<View style={styles.container}>
-				<ScreenHeader title="Withdraw your earnings" leftElement={<BackButton iconType="cancel" />} style={{ marginBottom: spacingY._10 }} />
+				<ScreenHeader title="Withdraw funds" leftElement={<BackButton iconType="cancel" />} style={{ marginBottom: spacingY._10 }} />
 
 				
 			</View>

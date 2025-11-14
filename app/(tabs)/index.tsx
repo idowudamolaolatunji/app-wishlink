@@ -1,6 +1,6 @@
+import ContributionList from "@/components/ContributionList";
 import HomeReferral from "@/components/HomeReferral";
 import ScreenWrapper from "@/components/ScreenWrapper";
-import TransactionList from "@/components/TransactionList";
 import { BaseColors, radius, spacingX, spacingY } from '@/constants/theme';
 import { useAuth } from "@/contexts/AuthContext";
 import useFetchData from "@/hooks/useFetchData";
@@ -8,7 +8,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { formatCurrency } from "@/utils/helpers";
 import { ContributorType, WalletType } from "@/utils/types";
 import { useRouter } from "expo-router";
-import { limit, where } from "firebase/firestore";
+import { limit, orderBy, where } from "firebase/firestore";
 import * as Icons from "phosphor-react-native";
 import { useState } from "react";
 import { ImageBackground, Platform, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -28,14 +28,13 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 
 	const { data, loading: walletLoading, refetch: refetchWallet } = useFetchData<WalletType>(
-		"wallets", (user?.uid) ? [where("uid", "==", user.uid), limit(1)] : [],
+		"wallets", (user?.uid) ? [where("uid", "==", user.uid), limit(50)] : [],
 	);
 	const wallet = data?.[0];
 
 	const { data: contributors, error, loading: contributorLoading, refetch: refetchContributor } = useFetchData<ContributorType>(
-		"contributors", (user?.uid) ? [where("uid", "==", user?.uid), limit(1)] : [],
+		"contributors", (user?.uid) ? [where("uid", "==", user?.uid), orderBy("createdAt", "desc"), limit(10)] : [],
 	);
-	
 
 	const handleRefresh = function() {
 		setRefreshing(true);
@@ -163,7 +162,7 @@ export default function HomeScreen() {
 					)}
 
 					{!error && (
-						<TransactionList
+						<ContributionList
 							title="Recent Contributions"
 							data={contributors as ContributorType[]}
 							loading={contributorLoading}

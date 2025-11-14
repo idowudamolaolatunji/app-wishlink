@@ -24,8 +24,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     logo: {
-        width: 300,
-        // aspectRatio: 1,
-        height: 300,
+        width: 250,
+        aspectRatio: 1,
     }
 })

@@ -1,5 +1,7 @@
+import BackdropOverlay from "@/components/BackdropOverlay";
 import Loading from "@/components/Loading";
 import ScreenWrapper from "@/components/ScreenWrapper";
+import { TransactionItem } from "@/components/TransactionList";
 import Typography from "@/components/Typography";
 import { BaseColors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,6 +9,7 @@ import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
 import { verticalScale } from "@/utils/styling";
 import { TransactionType, WalletType } from "@/utils/types";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { limit, orderBy, where } from "firebase/firestore";
@@ -23,23 +26,26 @@ export default function WalletScreen() {
 	const { user } = useAuth();
 	const { Colors, currentTheme } = useTheme();
 	const [refreshing, setRefreshing] = useState(false);
+	const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 	
 	const { data: walletData, loading: walletLoading, refetch: refetchWallet } = useFetchData<WalletType>(
 		"wallets", (user?.uid) ? [where("uid", "==", user.uid), limit(1)] : [],
 	);
 	const wallet = walletData?.[0];
 
-	const constraints = user?.uid 
-		? [where("uid", "==", user.uid), orderBy("created", "desc")]
-		: [orderBy("created", "desc")]
-	;
-	const { data: transactionData, error, loading: transactionLoading, refetch: refetchTransactions } = useFetchData<TransactionType>("transactions", constraints);
+	const { data: transactionData, error, loading: transactionLoading, refetch: refetchTransactions } = useFetchData<TransactionType>(
+		"transactions", user?.uid ? [where("uid", "==", user.uid), orderBy("paidAt", "desc")] : []
+	);
 
 	const handleRefresh = function() {
 		setRefreshing(true);
 		refetchWallet();
 		refetchTransactions();
     	setRefreshing(false);
+	}
+
+	const handleClickTransaction = function(item: TransactionType) {
+		router.push({ pathname: "/(modals)/contributionTransactionModal", params: { id: item?.id, } })
 	}
 
 	return (
@@ -57,31 +63,84 @@ export default function WalletScreen() {
 					</View>
 				</View>
 
-
 				<View style={[styles.transactionView, { backgroundColor: Colors[currentTheme == "dark" ? "background300" : "cardBackground"] }]}>
 
 					<View style={styles.flexRow}>
 						<Typography size={isIOS ? 20 : 23} fontFamily="urbanist-semibold">My Transactions</Typography>
 
 						<TouchableOpacity
-							onPress={() => router.push("/(modals)/withdrawalModal")}
+							// onPress={() => router.push("/(modals)/withdrawalModal")}
+							onPress={() => setShowOptionsMenu(true)}
 							activeOpacity={0.75}
 							style={{
 								width: verticalScale(isIOS ? 37 : 40),
 								height: verticalScale(isIOS ? 37 : 40),
-								backgroundColor: BaseColors.primaryLight,
+								backgroundColor: BaseColors.accent,
 								alignItems: "center",
 								justifyContent: "center",
 								borderRadius: 100
 							}}
 						>
-							<Icons.HandWithdrawIcon
+							<Icons.DotsThreeOutlineVerticalIcon
 								weight="fill"
-								color={BaseColors.white}
+								color={BaseColors.primaryLight}
 								size={verticalScale(30)}
 							/>
 						</TouchableOpacity>
 					</View>
+
+					{showOptionsMenu && (
+						<React.Fragment>
+							<BackdropOverlay handleClose={() => setShowOptionsMenu(false)} />
+							<View 
+								style={{
+									position: "absolute",
+									top: verticalScale(40),
+									right: verticalScale(60),
+									zIndex: 105,
+									backgroundColor: Colors.background300,
+									padding: spacingY._5,
+									borderRadius: radius._6,
+								}}
+							>
+								<TouchableOpacity
+									onPress={() => {
+										router.push("/(modals)/withdrawalModal");
+										setShowOptionsMenu(false);
+									}}
+									style={{
+										paddingHorizontal: spacingY._20,
+										paddingVertical: spacingY._10,
+										flexDirection: "row",
+										alignItems: "center",
+										gap: spacingY._10,
+										borderBottomWidth: 1,
+										borderBottomColor: BaseColors.neutral600
+									}}
+								>
+									<Icons.CurrencyNgnIcon color={Colors.text} weight="bold" size={verticalScale(18)} />
+									<Typography fontFamily="urbanist-semibold" size={isIOS ? 18 : 20}>Withdral Funds</Typography>
+								</TouchableOpacity>
+
+								<TouchableOpacity
+									onPress={() => {
+										router.push("/(modals)/withdrawalModal");
+										setShowOptionsMenu(false);
+									}}
+									style={{
+										paddingHorizontal: spacingY._20,
+										paddingVertical: spacingY._10,
+										flexDirection: "row",
+										alignItems: "center",
+										gap: spacingY._10,
+									}}
+								>
+									<Icons.ClockCounterClockwiseIcon color={Colors.text} weight="bold" size={verticalScale(18)} />
+									<Typography fontFamily="urbanist-semibold" size={isIOS ? 18 : 20}>View History</Typography>
+								</TouchableOpacity>
+							</View>
+						</React.Fragment>
+					)}
 
 					<ScrollView
 						refreshControl={
@@ -98,6 +157,18 @@ export default function WalletScreen() {
 						{transactionLoading && (
 							<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
 								<Loading color={BaseColors[currentTheme == "light" ? "primaryLight" : "accentDarker"]} />
+							</View>
+						)}
+
+						{(!transactionLoading && transactionData.length > 0) && (
+							 <View style={{ minHeight: 3 }}>
+								<FlashList
+									data={transactionData as TransactionType[]}
+									renderItem={({ item, index }) => (
+										<TransactionItem key={index} item={item as TransactionType} index={index} handleClick={handleClickTransaction} />
+									)}
+									{...({ estimatedItemSize: 60 } as any)}
+								/>
 							</View>
 						)}
 
@@ -150,9 +221,10 @@ const styles = StyleSheet.create({
 	},
 	transactionView: {
 		flex: 1,
+		gap: spacingY._25,
 		borderTopRightRadius: radius._30,
 		borderTopLeftRadius: radius._30,
-		padding: spacingX._20,
+		padding: spacingX._18,
 		paddingTop: spacingX._25
 	},
 });

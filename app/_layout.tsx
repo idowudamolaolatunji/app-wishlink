@@ -1,12 +1,12 @@
-import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
-import 'react-native-reanimated';
-
 import { AppProvider } from "@/contexts/AppContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { useEffect } from "react";
+import { useFonts } from "expo-font";
+import { SplashScreen, Stack } from "expo-router";
+import React, { useEffect } from "react";
 import { PaystackProvider } from "react-native-paystack-webview";
+import 'react-native-reanimated';
+
 
 export default function RootLayout() {
 	const [loaded] = useFonts({
@@ -36,10 +36,8 @@ export default function RootLayout() {
 							"bank_transfer",
 							"card",
 							"ussd",
-							// "qr",
-							// "apple_pay",
 						]}
-						publicKey="pk_test_6fd2a442142bdd0f24cc518ed0d301c2b5b1e64d"
+						publicKey={process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY!}
 					>
 						<Stack screenOptions={{ headerShown: false }}>
 							<Stack.Screen name="index" />

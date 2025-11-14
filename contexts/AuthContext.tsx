@@ -83,6 +83,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode}> = function({ c
             if(msg?.includes("(auth/invalid-credential)") || msg?.includes("(auth/invalid-email)")) {
                 msg = "Wrong credentials!"
             }
+
+            if(msg?.includes("(auth/network-request-failed)")) msg = "Check network connections";
+
             return { success: false, msg }
         }
     }
@@ -124,6 +127,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode}> = function({ c
             if(msg?.includes("(auth/email-already-in-use)") || msg?.includes("(auth/invalid-email)")) {
                 msg = "Email already in use"
             }
+            if(msg?.includes("(auth/network-request-failed)")) msg = "Check network connections";
+
             return { success: false, msg }
         }
     }

@@ -15,7 +15,7 @@ export const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider = function({ children }: { children: React.ReactNode }) {
     const colorScheme = useColorScheme();
-    const [isSystemTheme, setIsSystemTheme] = useState(false);
+    const [isSystemTheme, setIsSystemTheme] = useState(true);
     const [theme, setTheme] = useState<ThemeString>("light");
 
     // GET THE STORE THEME DATA

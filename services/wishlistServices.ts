@@ -23,11 +23,12 @@ export const createOrUpdateWishlist = async function (wishlistData: Partial<Wish
             wishlistToSave.totalWishItems = 0;
             wishlistToSave.totalContributors = 0;
             wishlistToSave.totalGoalAmount = 0;
-            wishlistToSave.totalAmountRecieved = 0;
+            wishlistToSave.totalAmountReceived = 0;
             wishlistToSave.isCompleted = false;
             wishlistToSave.active = true;
             wishlistToSave.slug = `${slug}`;
-            wishlistToSave.link = `https://pay.wishers.app/w/${slug}`;
+            // wishlistToSave.link = `https://pay.wishers.app/w/${slug}`;
+            wishlistToSave.link = `https://pay-wishers.vercel.app/w/${slug}`;
             wishlistToSave.wishes = [];
             wishlistToSave.created = new Date();
         }
@@ -64,7 +65,7 @@ export const createOrUpdateWishItem = async function (wishData: Partial<WishItem
             const slug = generateSlug();
             wishToSave.slug = slug;
             wishToSave.contributorCount = 0;
-            wishToSave.amountRecieved = 0;
+            wishToSave.amountReceived = 0;
             wishToSave.created = new Date();
             wishToSave.active = true;
             wishToSave.isCompleted = false;
@@ -93,7 +94,7 @@ export const createOrUpdateWishItem = async function (wishData: Partial<WishItem
                     title: wishToSave.title,
                     slug: wishToSave.slug,
                     goalAmount: wishToSave.goalAmount,
-                    amountRecieved: 0,
+                    amountReceived: 0,
                     contributorCount: 0,
                     id: wishRef?.id,
                     isCompleted: false,
@@ -158,7 +159,7 @@ export const deleteWishItem = async function (wishId: string, wishlistId: string
 
         const wishData = wishSnapshot.data() as WishItemType;
         const deletingWishGoalAmount = wishData?.goalAmount;
-        const deletingWishRecievedAmount = wishData?.amountRecieved;
+        const deletingWishReceivedAmount = wishData?.amountReceived;
         const deletingWishContributors = wishData?.contributorCount;
 
         // fetch the wishlist for that wish
@@ -168,7 +169,7 @@ export const deleteWishItem = async function (wishId: string, wishlistId: string
 
         const wishlistData = wishlistShapshot?.data() as WishlistType;
         const newTotalGoalAmount = wishlistData?.totalGoalAmount! - deletingWishGoalAmount!;
-        const newTotalAmountRecieved = wishlistData?.totalAmountRecieved! - deletingWishRecievedAmount!;
+        const newTotalAmountReceived = wishlistData?.totalAmountReceived! - deletingWishReceivedAmount!;
         const newTotalContributors = wishlistData?.totalContributors! - deletingWishContributors!;
         const newTotalWishItems = wishlistData?.totalWishItems! - 1
         const remainingWishitems = wishlistData?.wishes?.filter((wish) => wish?.id != wishId);
@@ -177,7 +178,7 @@ export const deleteWishItem = async function (wishId: string, wishlistId: string
         // check fields that needs to be update
         await createOrUpdateWishlist({
             id: wishlistId,
-            totalAmountRecieved: newTotalAmountRecieved,
+            totalAmountReceived: newTotalAmountReceived,
             totalWishItems: newTotalWishItems,
             totalContributors: newTotalContributors,
             totalGoalAmount: newTotalGoalAmount,

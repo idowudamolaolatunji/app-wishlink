@@ -6,7 +6,7 @@ export const processOneTimePayment = async function(reference: string, uid: stri
     try {
         const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
             method: "GET",
-            headers: { Authorization: `Bearer sk_test_04199b92f579c521e3f4d2e50d6300db6385d086` }
+            headers: { Authorization: `Bearer ${process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY}` }
         });
 
         const data = await response.json();

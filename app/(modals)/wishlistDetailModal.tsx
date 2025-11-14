@@ -57,7 +57,7 @@ export default function wishlistDetailModal() {
         (user?.uid && slug) ? [where("uid", "==", user.uid), where("slug", "==", slug), limit(1)] : [],
     );
     const wishlist = data[0] as WishlistType;
-    const percentage = calculatePercentage(wishlist?.totalAmountRecieved ?? 0, wishlist?.totalGoalAmount ?? 0);
+    const percentage = calculatePercentage(wishlist?.totalAmountReceived ?? 0, wishlist?.totalGoalAmount ?? 0);
 
     const handleRefresh = function() {
 		setRefreshing(true);
@@ -67,10 +67,12 @@ export default function wishlistDetailModal() {
 
     // THIS IS WHERE WE SHARE THE WISH ITEMS
     const handleShare = async function() {
+        if(wishlist?.isCompleted) return Burnt.toast({ haptic: "error", title: `Cannot share a "Wishlist" with all completed wishes` })
         setLoading({ ...loading, share: true });
         try {
             await Share.share({
-                message: `Check out my Wishlist: ${wishlist?.title} \n\n${wishlist.link}`,
+                // message: `Check my Wishlist: \n\n${wishlist?.title} \n\n${wishlist.link}`,
+                message: `Abeg 🥹 help me acheive my wishlist, ${wishlist?.title} \n\n${wishlist.link}`,
                 url: `${wishlist.link}`, // iOS only
                 title: 'Share Wishlist', // Android only
             });
@@ -81,11 +83,6 @@ export default function wishlistDetailModal() {
         }
     };
 
-    const handleQrCode = function() {
-        setShowQr(true);
-
-    }
-
     // CREATE ACTION TO GO TO THE CREATE WISHITEM PAGE WITH WISHLIST ID AND WISHLIST SLUG, ALSO CHECKING IF LIMIT IS EXCEEDED
     const handleCreateAction = function() {
         if((wishlist?.wishes ?? [])?.length >= actions?.wishitemCreationLimit!) {
@@ -93,7 +90,7 @@ export default function wishlistDetailModal() {
         } else {
             router.push({
                 pathname: "/(modals)/createEditWishItemModal",
-                params: { wishlistId: wishlist?.id}
+                params: { wishlistId: wishlist?.id }
             })
         }
     }
@@ -213,6 +210,11 @@ export default function wishlistDetailModal() {
                                 <Typography fontFamily="urbanist-semibold" size={isIOS ? 18 : 20}>Edit</Typography>
                             </TouchableOpacity>
 
+                            <TouchableOpacity onPress={() => {}} style={{ paddingHorizontal: spacingY._20, paddingVertical: spacingY._10, borderBottomWidth: 1, borderBottomColor: BaseColors.neutral600, flexDirection: "row", gap: spacingX._5, alignItems: "center" }}>
+                                <Typography fontFamily="urbanist-semibold" size={isIOS ? 18 : 20}>Boost</Typography>
+                                <Icons.RocketLaunchIcon color={Colors.text} weight="bold" size={verticalScale(24)} />
+                            </TouchableOpacity>
+
                             <TouchableOpacity onPress={handleDeleteAction} style={{ paddingHorizontal: spacingY._20, paddingVertical: spacingY._10 }}>
                                 <Typography fontFamily="urbanist-semibold" size={isIOS ? 18 : 20}>Delete</Typography>
                             </TouchableOpacity>
@@ -285,7 +287,7 @@ export default function wishlistDetailModal() {
                                         Overall Progress
                                     </Typography>
                                     <Typography fontFamily="urbanist-bold" size={verticalScale(isIOS ? 18 : 20.5)} color={BaseColors.primaryLight}>
-                                        {wishlist?.totalAmountRecieved ? `${formatShortCurrency(wishlist?.totalAmountRecieved ?? 0)} / ${formatShortCurrency(wishlist?.totalGoalAmount ?? 0)}` : formatCurrency(0)}
+                                        {wishlist?.totalAmountReceived ? `${formatShortCurrency(wishlist?.totalAmountReceived ?? 0)} / ${formatShortCurrency(wishlist?.totalGoalAmount ?? 0)}` : formatCurrency(0)}
                                     </Typography>
                                 </View>
 
@@ -340,7 +342,7 @@ export default function wishlistDetailModal() {
                             </View>
 
                             {/* wish items top */}
-                            <View style={[styles.flexRow, { marginVertical: spacingY._7, }]}>
+                            <View style={[styles.flexRow, { marginVertical: spacingY._7, marginTop: spacingY._15, }]}>
                                 <Typography size={isIOS ? 20 : 23} fontFamily="urbanist-semibold">Your Wishes</Typography>
         
                                 <TouchableOpacity
@@ -358,7 +360,7 @@ export default function wishlistDetailModal() {
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={{ gap: spacingY._12, flex: 1, marginBottom: spacingY._20, }}>
+                            <View style={{ gap: spacingY._12, flex: 1, marginBottom: spacingY._20, marginTop: spacingY._5 }}>
                                 {(wishlist?.wishes && wishlist?.wishes?.length > 0) ? (
                                     <React.Fragment>
                                         {wishlist?.wishes?.map((item, index) => (
@@ -425,16 +427,16 @@ export default function wishlistDetailModal() {
 function WishItem({ item, index }: { item: WishItemType, index: number }) {
     const { Colors } = useTheme();
     const router = useRouter();
-    const percentage = calculatePercentage(item?.amountRecieved ?? 0, item?.goalAmount ?? 0);
+    const percentage = calculatePercentage(item?.amountReceived ?? 0, item?.goalAmount ?? 0);
 
     return (
         <Animated.View entering={FadeInDown.delay(index * 70)}>
             <TouchableOpacity
                 activeOpacity={0.8}
-                style={[styles.itemCard, { backgroundColor: Colors.cardBackground }]}
+                style={[styles.itemCard, { backgroundColor: Colors.cardBackground, opacity: (item?.isCompleted || !item?.active) ? 0.8 : 1 }]}
                 onPress={() => router.push({
                     pathname: "/(modals)/wishItemDetailModal",
-                    params: { slug: item?.slug, title: item?.title },
+                    params: { slug: item?.slug, title: item?.title, id: item.id },
                 })}
             >
                 <View style={styles.itemImageContainer}>
@@ -462,8 +464,11 @@ function WishItem({ item, index }: { item: WishItemType, index: number }) {
 
                     <View style={styles.flexRow}>
                         <Typography fontFamily="urbanist-semibold" size={verticalScale(isIOS ? 17 : 19)} color={Colors.textLighter}>
-                            {percentage ?? 0}% Funded
+                            {item?.isCompleted ? "Completed 🎉" : (
+                                <>{percentage ?? 0}% Funded</>
+                            )}
                         </Typography>
+
                         <View style={{ flexDirection: "row", gap: 3 }}>
                             <Icons.UsersThreeIcon size={verticalScale(20)} color={Colors.textLighter} />
                             <Typography fontFamily="urbanist-semibold" size={verticalScale(isIOS ? 17 : 19)} color={Colors.textLighter}>
@@ -525,7 +530,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        gap: spacingX._18,
+        gap: spacingX._12,
     },
     itemImageContainer: {
         justifyContent: "center",

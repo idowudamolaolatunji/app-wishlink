@@ -25,13 +25,7 @@ export default function SettingsModal() {
     const { enableBiometric, disableBiometric, biometricEnabled } = useAuth();
     const { isBiometricSupported, isEnrolled } = useBiometricAuth();
     const [loading, setLoading] = useState({ main: false, biometric: false });
-    const [bioEnabled, setBioEnabled] = useState(true);
-
-    // const isOpen = useSharedValue(false);
-
-    // const toggleSheet = function() {
-    //     isOpen.value = !isOpen.value;
-    // };
+    const [bioEnabled, setBioEnabled] = useState(false);
 
     const toggleBiometric = async (value: boolean) => {
         setLoading({ ...loading, biometric: true });
@@ -83,7 +77,7 @@ export default function SettingsModal() {
                                     <ToggleSwitch
                                         isOn={biometricEnabled || bioEnabled}
                                         onColor={BaseColors.primary}
-                                        offColor={BaseColors.accent}
+                                        offColor={BaseColors.accentDarker}
                                         size="small"
                                         onToggle={isOn => toggleBiometric(isOn)}
                                     />
@@ -118,10 +112,6 @@ export default function SettingsModal() {
                     {/* the rest of it */}
                 </ScrollView>
             </View>
-            
-            {/* <BottomSheet isOpen={isOpen} toggleSheet={toggleSheet} customHeight={verticalScale(400)}>
-                <PasswordChange />
-            </BottomSheet> */}
         </ModalWrapper>
     )
 }

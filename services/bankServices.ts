@@ -17,11 +17,11 @@ export async function handleResolveAccount(accountNumber: string, code: string, 
         const response = await fetch(`https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${code}&currency=${currencyName}`, {
             method: "GET",
             headers: {
-                Authorization: "Bearer sk_test_04199b92f579c521e3f4d2e50d6300db6385d086",
+                Authorization: `Bearer ${process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY}`,
                 'Content-Type': 'application/json'
             }
         });
-        console.log(response)
+        // console.log(response)
         const data = await response.json();
         if (!data.status) throw new Error(data.message);
         return { success: true, data };

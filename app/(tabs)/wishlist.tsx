@@ -23,6 +23,7 @@ import * as Burnt from 'burnt';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { orderBy, where } from "firebase/firestore";
+import LottieView from "lottie-react-native";
 import * as Icons from "phosphor-react-native";
 import React, { useState } from "react";
 import { Platform, Pressable, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -48,7 +49,9 @@ export default function WishlistScreen() {
     const discountedAmount = oneTimeFee! * (1 - discountPercentage! / 100);
     const checkoutAmount = discountPercentage ? discountedAmount! : actions?.oneTimeFee!
 
-    const { data, error, loading, refetch } = useFetchData<WishlistType>("wishlists", user?.uid ? [where("uid", "==", user.uid), orderBy("created", "desc")] : [orderBy("created", "desc")]);
+    const { data, error, loading, refetch } = useFetchData<WishlistType>(
+        "wishlists", user?.uid ? [where("uid", "==", user.uid), orderBy("created", "desc")] : [orderBy("created", "desc")]
+    );
     const completed = data?.filter(list => list && list?.isCompleted);
 
     const handleRefresh = function() {
@@ -85,7 +88,7 @@ export default function WishlistScreen() {
             amount: checkoutAmount,
             reference: `TNX_${Date.now()}`,
             onError: (err) => console.log("Error:", err),
-            onLoad: () => console.log("Webview Loaded!"),
+            // onLoad: () => console.log("Webview Loaded!"),
             onCancel: () => Burnt.toast({ haptic: "error", title: "Payment Cancelled!" }),
             onSuccess: async (res) => {
                 setPayLoading(true);
@@ -266,7 +269,7 @@ function WishListComponent({ item, index, handleOpenDetails }: {
     item: WishlistType, index: number, handleOpenDetails: () => void;
 }) {
 	const { Colors } = useTheme();
-    const percentage = calculatePercentage(item?.totalAmountRecieved ?? 0, item?.totalGoalAmount ?? 0)
+    const percentage = calculatePercentage(item?.totalAmountReceived ?? 0, item?.totalGoalAmount ?? 0)
 
 
     return (
@@ -309,7 +312,14 @@ function WishListComponent({ item, index, handleOpenDetails }: {
 
                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                         <Typography fontFamily="urbanist-semibold" size={verticalScale(isIOS ? 17 : 20)} color={Colors.textLighter}>{percentage}% Raised</Typography>
-                        <Typography fontFamily="urbanist-bold" size={verticalScale(isIOS ? 18 : 20.5)} color={BaseColors.primaryLight}>{item?.totalAmountRecieved ? `${formatShortCurrency(item?.totalAmountRecieved ?? 0)} / ${formatShortCurrency(item?.totalGoalAmount ?? 0)}` : formatCurrency(0)}</Typography>
+                        {!item?.isCompleted ? (
+                            <Typography fontFamily="urbanist-bold" size={verticalScale(isIOS ? 18 : 20.5)} color={BaseColors.primaryLight}>{item?.totalAmountReceived ? `${formatShortCurrency(item?.totalAmountReceived ?? 0)} / ${formatShortCurrency(item?.totalGoalAmount ?? 0)}` : formatCurrency(0)}</Typography>
+                        ) : (
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: spacingX._5 }}>
+                                <Typography fontFamily="urbanist-bold" size={verticalScale(isIOS ? 18 : 20.5)} color={BaseColors.primaryLight}>Completed</Typography>
+                                <LottieView source={require("@/assets/lottie/popper-big.json")} loop autoPlay style={{ width: 24, height: 24, marginTop: -7 }} />
+                            </View>
+                        )}
                     </View>
                 </View>
             </TouchableOpacity>

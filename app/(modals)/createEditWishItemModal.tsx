@@ -35,7 +35,7 @@ export default function createEditWishItemModal() {
         description?: string,
         images?: any,
         goalAmount?: string,
-        amountRecieved?: string,
+        amountReceived?: string,
         isCompleted?: string;
     } = useLocalSearchParams();
     
@@ -63,7 +63,7 @@ export default function createEditWishItemModal() {
 
             setImages(currentWishData?.images?.split(',') || []);
 
-            if(+currentWishData?.amountRecieved! < 1) {
+            if(+currentWishData?.amountReceived! < 1) {
                 setCanEditGoalAmount(true)
             } else {
                 setCanEditGoalAmount(false);
@@ -108,7 +108,7 @@ export default function createEditWishItemModal() {
                 router.replace({
                     pathname: "/(modals)/wishItemDetailModal",
                     params: {
-                        id: currentWishData?.id,
+                        id: res.data?.id as string,
                         slug: res.data?.slug,
                         isnew: "true"
                     }
@@ -130,7 +130,7 @@ export default function createEditWishItemModal() {
         if(!currentWishData?.id) return;
         setLoading(true);
 
-        console.log(currentWishData?.id, currentWishData?.wishlistId)
+        // console.log(currentWishData?.id, currentWishData?.wishlistId)
 
         try {
             const res = await deleteWishItem(currentWishData?.id!, currentWishData?.wishlistId!);

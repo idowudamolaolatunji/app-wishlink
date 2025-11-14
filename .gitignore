@@ -38,7 +38,7 @@ yarn-error.*
 
 .env
 env.d.ts
-config
+# config
 
 # generated native folders
 /ios

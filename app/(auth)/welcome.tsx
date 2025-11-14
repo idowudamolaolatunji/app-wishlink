@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Typography from '@/components/Typography'
-import { spacingX, spacingY } from '@/constants/theme'
+import { BaseColors, spacingX, spacingY } from '@/constants/theme'
 import { useTheme } from '@/hooks/useTheme'
 import { verticalScale } from '@/utils/styling'
 import { useRouter } from 'expo-router'
@@ -36,7 +36,7 @@ export default function WelcomeScreen() {
                         entering={FadeInDown.duration(1000)}
                     >
                         <Typography size={ Platform.OS == "ios" ? 30 : 38} fontFamily='urbanist-bold' fontWeight="600" style={{ letterSpacing: 1 }}>
-                            Make your secret 
+                            Make your 
                         </Typography>
                         <Typography size={ Platform.OS == "ios" ? 30 : 38} fontFamily='urbanist-bold' fontWeight="600" style={{ letterSpacing: 1 }}>
                             wishes come through
@@ -52,9 +52,12 @@ export default function WelcomeScreen() {
                             Lorem, ipsum dolor.
                         </Typography>
                     </Animated.View>
+
                     <View style={styles.ctaButtonConatiner}>
                         <Button onPress={() => router.push("/(auth)/sign-up")}>
-                            <Typography size={Platform.OS == "ios" ? 20 : 25} color={Colors.background} fontWeight="600" fontFamily='urbanist-bold'>
+                            <Typography size={Platform.OS == "ios" ? 20 : 25} color={BaseColors.white} fontWeight="600" fontFamily='urbanist-bold'
+                                // this wasnt neccessary but there is a bug inside this side
+                                style={{ borderWidth: 1, borderColor: "transparent" }}>
                                 Get Started
                             </Typography>
                         </Button>
@@ -83,6 +86,7 @@ const styles = StyleSheet.create({
     },
 
     footerArea: {
+        width: "100%",
         alignItems: "center",
         paddingTop: verticalScale(30),
         paddingBottom: verticalScale(45),

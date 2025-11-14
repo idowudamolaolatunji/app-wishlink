@@ -3,7 +3,7 @@ import { scale, verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
 import React from "react";
-import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Image, ImageBackground, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Typography from "./Typography";
 
 const isIOS = Platform.OS === "ios";
@@ -11,8 +11,14 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
     const router = useRouter();
 
 	return (
-		<View style={styles.container}
+		// <View style={styles.container}
+		<ImageBackground style={styles.container}
             // entering={FadeInRight.duration(1000)}
+            source={require("@/assets/images/circle-treatment-half.png")}
+            resizeMode="cover"
+            imageStyle={{
+                width: '45%',
+            }}
         >
             <View style={styles.referralFlex}>
                 <Pressable style={styles.closeIcon} onPress={handleClose}>
@@ -25,14 +31,16 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
 
                 <View>
                     <Typography
-                        color={BaseColors.neutral600}
+                        // color={BaseColors.neutral600}
+                        color="#642878"
                         fontFamily="urbanist-semibold"
                         size={verticalScale(isIOS ? 18 : 20)}
                     >
                         Get 1% of your friend's earnings
                     </Typography>
                     <Typography
-                        color={BaseColors.neutral600}
+                        // color={BaseColors.neutral600}
+                        color="#642878"
                         fontFamily="urbanist-semibold"
                         size={verticalScale(isIOS ? 18 : 20)}
                     >
@@ -57,7 +65,7 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
                     resizeMode="contain"
                 />
             </View>
-        </View>
+        </ImageBackground>
 	);
 }
 
@@ -65,12 +73,12 @@ const styles = StyleSheet.create({
 	container: {
 		height: scale(100),
 		width: "100%",
-        // backgroundColor: BaseColors.accentLight,
-        backgroundColor: "#fff5faff",
+        // backgroundColor: "#fff5faff",
+        backgroundColor: "#fbedffff",
         borderRadius: radius._10,
         borderWidth: 1,
         borderColor: BaseColors.neutral200,
-        position: "relative",
+        position: "relative",        
 	},
     closeIcon: {
         position: "absolute",
@@ -96,7 +104,8 @@ const styles = StyleSheet.create({
         gap: 4,
         justifyContent: "center",
         alignItems: "flex-start",
-        backgroundColor: BaseColors.primaryLight
+        // backgroundColor: BaseColors.primaryLight
+        backgroundColor: "#642878",
     }
 });
 

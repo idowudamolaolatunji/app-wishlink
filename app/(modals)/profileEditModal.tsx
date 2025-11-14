@@ -121,7 +121,7 @@ export default function ProfileEditModal() {
 
         <View style={[styles.footerArea, { borderTopColor: BaseColors[currentTheme == "dark" ? "neutral700" : "neutral400"] }]}>
             <Button onPress={handleSubmit} disabled={shouldDisable} style={{ flex: 1 }} loading={loading}>
-                <Typography size={Platform.OS == "ios" ? 22 : 25} fontFamily="urbanist-semibold" color={Colors.inverseText}>Update</Typography>
+                <Typography size={Platform.OS == "ios" ? 22 : 25} fontFamily="urbanist-semibold" color={BaseColors.white}>Update</Typography>
             </Button>
         </View>
     </ModalWrapper>
