@@ -114,6 +114,7 @@ export const createOrUpdateWishItem = async function (wishData: Partial<WishItem
                 id: wishToSave.id,
                 image: wishToSave?.images?.[0],
                 title: wishToSave.title,
+                description: wishToSave?.description,
                 goalAmount: wishToSave.goalAmount,
             };
 

@@ -35,7 +35,13 @@ export default function useFetchData<T>(collectionName: string, constrains: Quer
 			},
 			(err: any) => {
 				console.log("Error fetching data: ", err);
-				setError(err.message || "Oops Error!");
+				if (err.code === 'unavailable') {
+					setError('No internet connection. Please check your network.');
+				} else if (err.code === 'permission-denied') {
+					setError('Access denied. Please login.');
+				} else {
+					setError(err.message || "Oops Error!");
+				}
 				setLoading(false);
 			},
 		);

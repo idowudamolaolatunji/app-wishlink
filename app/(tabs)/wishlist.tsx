@@ -119,14 +119,14 @@ export default function WishlistScreen() {
                 <View style={styles.insights}>
                     <WishInsight
                         title="Total Wishlists"
-                        value={`${data?.length}`}
+                        value={loading ? "---" : `${data?.length}`}
                         // icon={<Icons.ScrollIcon size={24}  weight="bold" color={BaseColors.white} />}
                         icon={<Icons.ScrollIcon size={24}  weight="bold" color="#1e40af" />}
                         iconbgColor="#dbeafe"
                     />
                     <WishInsight
                         title="Completed"
-                        value={`${completed?.length}`}
+                        value={loading ? "---" : `${completed?.length}`}
                         // icon={<Icons.ListChecksIcon size={23} weight="bold" color={BaseColors.white} />}
                         icon={<Icons.ListChecksIcon size={23} weight="bold" color="#9f1239" />}
                         iconbgColor="#fce7f3"

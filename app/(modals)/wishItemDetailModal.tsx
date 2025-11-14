@@ -18,7 +18,7 @@ import { scale, verticalScale } from "@/utils/styling";
 import { ContributorType, WishItemType } from "@/utils/types";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { limit, where } from "firebase/firestore";
+import { limit, orderBy, where } from "firebase/firestore";
 import LottieView from "lottie-react-native";
 import * as Icons from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
@@ -55,7 +55,7 @@ export default function wishItemDetailModal() {
     const percentage = calculatePercentage(item?.amountReceived ?? 0, item?.goalAmount ?? 0);
 
     const { data: contributors, loading: contributorLoading, refetch: refetchContributor } = useFetchData<ContributorType>(
-        "contributors", (user?.uid && params?.id) ? [where("uid", "==", user?.uid), where("wishId", "==", params?.id)] : [],
+        "contributors", (user?.uid && params?.id) ? [where("uid", "==", user?.uid), where("wishId", "==", params?.id), orderBy("createdAt", "desc")] : [],
     );
 
     const handleRefresh = function() {
