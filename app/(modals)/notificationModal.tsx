@@ -41,11 +41,11 @@ export default function NotificationModal() {
 	}
 
     const handleReadAll = async function() {
+        router?.back();
+
         if(unreadNotifications?.length > 0) {
             await markAllNotificationAsRead(user?.uid!);
-            countNotifications()
-        } else {
-            router?.back();
+            countNotifications();
         }
     }
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
         paddingBottom: spacingY._15
     },
     tabs: {
-        width: "60%",
+        width: "90%",
         flexDirection: "row",
         alignSelf: "center",
         alignItems: "center",

@@ -32,7 +32,7 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
                 <View>
                     <Typography
                         // color={BaseColors.neutral600}
-                        color="#642878"
+                        color={BaseColors.purple}
                         fontFamily="urbanist-semibold"
                         size={verticalScale(19)}
                     >
@@ -40,7 +40,7 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
                     </Typography>
                     <Typography
                         // color={BaseColors.neutral600}
-                        color="#642878"
+                        color={BaseColors.purple}
                         fontFamily="urbanist-semibold"
                         size={verticalScale(19)}
                     >
@@ -48,7 +48,7 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
                     </Typography>
                     
                     <Pressable style={styles.referralBtn} onPress={() => router.push("/(modals)/referralsModal")}>
-                        <Typography fontFamily="urbanist-bold" size={verticalScale(19)} color={BaseColors.white}>See How</Typography>
+                        <Typography fontFamily="urbanist-bold" size={verticalScale(19)} color={BaseColors.white}>See Details</Typography>
                         <Icons.ArrowRightIcon
                             size={19}
                             color={BaseColors.white}
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
 		height: scale(100),
 		width: "100%",
         // backgroundColor: "#fff5faff",
-        backgroundColor: "#fbedffff",
+        backgroundColor: BaseColors.purpleAccent,
         borderRadius: radius._10,
         borderWidth: 1,
         borderColor: BaseColors.neutral200,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "flex-start",
         // backgroundColor: BaseColors.primaryLight
-        backgroundColor: "#642878",
+        backgroundColor: BaseColors.purple,
     }
 });
 

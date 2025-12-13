@@ -7,16 +7,16 @@ import { StyleSheet, View } from 'react-native';
 import Typography from './Typography';
 
 
-export default function WishInsight({ icon, iconbgColor, title, value }: WishInsightType) {
+export default function WishInsight({ icon, iconbgColor, title, value, style, useDefaultTheme=true }: WishInsightType) {
     const { Colors, currentTheme } = useTheme();
 
     return (
-        <View style={[styles.insightContainer, { backgroundColor: Colors.cardBackground }]}>
+        <View style={[styles.insightContainer, { backgroundColor: useDefaultTheme ? Colors.cardBackground : BaseColors.neutrale900 }, style]}>
             <View style={{ gap: verticalScale(5) }}>
-                <Typography size={17} color={BaseColors[currentTheme == "light" ? "neutral600" : "neutral400"]} fontFamily="urbanist-semibold">
+                <Typography size={17} color={useDefaultTheme ? BaseColors[currentTheme == "light" ? "neutral600" : "neutral400"] : BaseColors[currentTheme == "light" ? "neutral200" : "neutral400"]} fontFamily="urbanist-semibold">
                     {title}
                 </Typography>
-                <Typography size={19.5} color={Colors.text} fontFamily="urbanist-bold">
+                <Typography size={19.5} color={useDefaultTheme ? Colors.text : BaseColors.neutral500} fontFamily="urbanist-bold">
                     {value ?? 0}
                 </Typography>
             </View>

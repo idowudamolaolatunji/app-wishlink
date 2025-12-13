@@ -3,12 +3,18 @@ import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Typography from './Typography';
 
-export default function ScreenHeader({ title, leftElement, style }: HeaderProps) {
+export default function ScreenHeader({ title, leftElement, rightElement, style }: HeaderProps) {
     return (
         <View style={[styles.container, style]}>
             {leftElement && (
                 <View style={styles.leftElement}>
                     {leftElement}
+                </View>
+            )}
+
+            {rightElement && (
+                <View style={styles.rightElement}>
+                    {rightElement}
                 </View>
             )}
 
@@ -36,5 +42,9 @@ const styles = StyleSheet.create({
     },
     leftElement: {
         alignSelf: "flex-start"
+    },
+    rightElement: {
+        alignSelf: "flex-end",
+        marginLeft: "auto",
     },
 });

@@ -9,7 +9,7 @@ import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import * as Icons from "phosphor-react-native"
 import React, { useState } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Typography from './Typography'
 
 
@@ -28,6 +28,17 @@ export default function MultipleImageUpload({
     const handlePickImage = async function() {
         if(files?.length >= actions?.maxWishItemImages!) {
             return Burnt.toast({ haptic: "error", title: "Max images upload exceeded" })
+        }
+
+        const permissionResult = 
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert(
+                "Permission Required",
+                "Please allow access to your photo library to upload your photos"
+            );
+            return;
         }
 
         try {

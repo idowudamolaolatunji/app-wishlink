@@ -1,10 +1,10 @@
 import { BaseColors, radius, spacingX, spacingY } from '@/constants/theme'
 import { useTheme } from '@/hooks/useTheme'
-import { getFilePath } from '@/services/imageService'
+import { getFilePath, getProfileImage } from '@/services/imageService'
 import { calculatePercentage, formatCurrency, formatShortCurrency } from '@/utils/helpers'
 import { verticalScale } from '@/utils/styling'
 import { FeaturedWishlistProps, WishlistType } from '@/utils/types'
-import { ImageBackground } from 'expo-image'
+import { Image, ImageBackground } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import * as Icons from "phosphor-react-native"
@@ -15,6 +15,7 @@ import Loading from './Loading'
 import Rangebar from './Rangebar'
 import Typography from './Typography'
 import WishlistCreator from './WishlistCreator'
+
 
 const { width } = Dimensions.get("window");
 
@@ -54,15 +55,15 @@ export default function FeaturedWishlists({ data, loading }: FeaturedWishlistPro
                         showsHorizontalScrollIndicator={false}
                         bounces={false}
                         overScrollMode="never" // default, always, never
-                        contentContainerStyle={{ gap: spacingX._15, paddingRight:  spacingX._30 }}
+                        contentContainerStyle={{ gap: spacingX._15, paddingRight: spacingX._30 }}
                         renderItem={({ item, index }) => (
                             <Animated.View entering={FadeInDown.delay(index * 70)}>
                                 <Pressable
                                     style={[styles.card, {
                                         backgroundColor: Colors.background200,
-                                        width: verticalScale(width - (data?.length > 1 ? 60 : 40)),
+                                        width: verticalScale(width - (data?.length > 1 ? 60 : 38)),
                                     }]}
-                                    onPress={() => router.push(`https://pay-wishers.vercel.app/w/${item?.slug}`)}
+                                    onPress={() => router.push(`https://pay.wishers.app/w/${item?.slug}`)}
                                 >
                                     <ImageBackground
                                         source={getFilePath(item?.image)}
@@ -75,14 +76,28 @@ export default function FeaturedWishlists({ data, loading }: FeaturedWishlistPro
                                         >
                                             <View style={styles.cardDetails}>
                                                 <WishlistCreator uid={item?.uid!} />
+                                                {/* <WishlistCreator creator={item?.boostingCreator!} /> */}
 
                                                 <Typography size={22} fontFamily="urbanist-bold" color={BaseColors.neutral100}>
                                                     {item?.title}
                                                 </Typography>
                             
                                                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                                                    <View style={{ flexDirection: "row", gap: 3 }}>
-                                                        <Icons.UsersThreeIcon size={21} color={BaseColors.neutral350} />
+                                                    <View style={{ flexDirection: "row", gap: 3, alignItems: "center" }}>
+                                                        {(item?.contributorsImages && (item?.contributorsImages?.length || 0) > 1) ? (
+                                                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                                                {(item?.contributorsImages as string[])?.map((img, i) => (
+                                                                    <Image
+                                                                        source={getProfileImage(img)}
+                                                                        style={[styles.contributorImage, { backgroundColor: BaseColors.neutral300, borderColor: BaseColors.white, marginRight: i == ((item?.contributorsImages?.length || 1) - 1) ? 0 : -10, }]}
+                                                                        contentFit="cover"
+                                                                        key={i}
+                                                                    />
+                                                                ))}
+                                                            </View>
+                                                        ) : (
+                                                            <Icons.UsersThreeIcon size={21} color={BaseColors.neutral350} />
+                                                        )}
                                                         <Typography fontFamily="urbanist-medium" size={verticalScale(17)} color={BaseColors.neutral350}>{item.totalContributors} Giver{item?.totalContributors === 1 ? "" : "s"}</Typography>
                                                     </View>
                                                     <View style={{ flexDirection: "row", gap: 3 }}>
@@ -139,5 +154,11 @@ const styles = StyleSheet.create({
     cardDetails: {
         gap: spacingY._10,
         padding: spacingY._10,
+    },
+    contributorImage: {
+        height: verticalScale(24),
+        width: verticalScale(24),
+        borderRadius: 100,
+        borderWidth: 1,
     },
 })

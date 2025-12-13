@@ -12,7 +12,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
-import { getFilePath } from "@/services/imageService";
+import { getFilePath, getProfileImage } from "@/services/imageService";
 import { calculatePercentage, formatCurrency } from "@/utils/helpers";
 import { scale, verticalScale } from "@/utils/styling";
 import { ContributorType, WishItemType } from "@/utils/types";
@@ -202,8 +202,21 @@ export default function wishItemDetailModal() {
                                     <Rangebar value={percentage} />
                                     
                                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                                        <View style={{ flexDirection: "row", gap: 3 }}>
-                                            <Icons.UsersThreeIcon size={verticalScale(20)} color={BaseColors.neutral500} />
+                                        <View style={{ flexDirection: "row", gap: 3, alignItems: "center" }}>
+                                            {(item?.contributorsImages && (item?.contributorsImages?.length || 0) > 1) ? (
+                                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                                    {(item?.contributorsImages as string[])?.map((img, i) => (
+                                                        <Image
+                                                            source={getProfileImage(img)}
+                                                            style={[styles.contributorImage, { backgroundColor: BaseColors.neutral300, borderColor: BaseColors.white, marginRight: i == ((item?.contributorsImages?.length || 1) - 1) ? 0 : -10, }]}
+                                                            contentFit="cover"
+                                                            key={i}
+                                                        />
+                                                    ))}
+                                                </View>
+                                            ) : (
+                                                <Icons.UsersThreeIcon size={verticalScale(20)} color={BaseColors.neutral500} />
+                                            )}
                                             <Typography fontFamily="urbanist-medium" size={verticalScale(18)} color={BaseColors.neutral500}>{item?.contributorCount} giver{item?.contributorCount === 1 ? "" : "s"}</Typography>
                                         </View>
 
@@ -331,6 +344,12 @@ const styles = StyleSheet.create({
         borderRadius: radius._15,
         borderCurve: "continuous",
         overflow: "hidden",
+        borderWidth: 1,
+    },
+    contributorImage: {
+        height: verticalScale(24),
+        width: verticalScale(24),
+        borderRadius: 100,
         borderWidth: 1,
     },
 });

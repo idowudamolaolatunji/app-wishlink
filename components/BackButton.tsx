@@ -2,7 +2,7 @@ import { BaseColors, radius } from '@/constants/theme';
 import { verticalScale } from '@/utils/styling';
 import { BackButtonProps } from '@/utils/types';
 import { useRouter } from 'expo-router';
-import { CaretLeftIcon, XIcon } from 'phosphor-react-native';
+import { CaretDownIcon, CaretLeftIcon, XIcon } from 'phosphor-react-native';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -20,14 +20,24 @@ export default function BackButton({ style, iconSize=26, iconType="back", custom
 
     return (
         <TouchableOpacity style={[styles.button, style]} onPress={handlePress}>
-            {iconType === "back" ? (
+            {iconType === "back" && (
                 <CaretLeftIcon
                     size={verticalScale(iconSize)}
                     color={BaseColors.white}
                     weight='bold'
                 />
-            ) : (
+            )}
+
+            {iconType === "cancel" && (
                 <XIcon
+                    size={verticalScale(iconSize)}
+                    color={BaseColors.white}
+                    weight='bold'
+                />
+            )}
+
+            {iconType === "drop" && (
+                <CaretDownIcon
                     size={verticalScale(iconSize)}
                     color={BaseColors.white}
                     weight='bold'

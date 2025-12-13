@@ -12,7 +12,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
-import { getFilePath } from "@/services/imageService";
+import { getFilePath, getProfileImage } from "@/services/imageService";
 import { processOneTimePayment } from "@/services/paymentServices";
 import { updateUser } from "@/services/userService";
 import { calculatePercentage, formatCurrency, formatShortCurrency } from "@/utils/helpers";
@@ -176,7 +176,7 @@ export default function WishlistScreen() {
                         <FlashList
                             data={data}
                             renderItem={({ item, index }: { item: WishlistType; index: number; }) => (
-                                <WishListComponent
+                                <WishListItem
                                     key={index}
                                     item={item}
                                     index={index}
@@ -264,7 +264,7 @@ export default function WishlistScreen() {
 }
 
 
-function WishListComponent({ item, index, handleOpenDetails }: { 
+function WishListItem({ item, index, handleOpenDetails }: { 
     item: WishlistType, index: number, handleOpenDetails: () => void;
 }) {
 	const { Colors } = useTheme();
@@ -284,6 +284,8 @@ function WishListComponent({ item, index, handleOpenDetails }: {
                     style={[styles.cardImage, { backgroundColor: Colors.background300 }]}
                 />
 
+                <LottieView source={require("@/assets/lottie/rocket.json")} loop autoPlay style={{ width: 24, height: 24, marginTop: -7, position: "absolute", top: "5%", right: "5%" }} />
+                
                 <View style={styles.cardDetails}>
                     <Typography
                         size={22}
@@ -297,8 +299,21 @@ function WishListComponent({ item, index, handleOpenDetails }: {
                     )}
 
                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                        <View style={{ flexDirection: "row", gap: 3 }}>
-                            <Icons.UsersThreeIcon size={21} color={Colors.textLighter} />
+                        <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+                            {(item?.contributorsImages && (item?.contributorsImages?.length || 0) > 1) ? (
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    {(item?.contributorsImages as string[])?.map((img, i) => (
+                                        <Image
+                                            source={getProfileImage(img)}
+                                            style={[styles.contributorImage, { backgroundColor: BaseColors.neutral300, borderColor: BaseColors.white, marginRight: i == ((item?.contributorsImages?.length || 1) - 1) ? 0 : -10, }]}
+                                            contentFit="cover"
+                                            key={i}
+                                        />
+                                    ))}
+                                </View>
+                            ) : (
+                                <Icons.UsersThreeIcon size={21} color={Colors.textLighter} />
+                            )}
                             <Typography fontFamily="urbanist-medium" size={verticalScale(17)} color={Colors.textLighter}>{item.totalContributors} Giver{item?.totalContributors === 1 ? "" : "s"}</Typography>
                         </View>
                         <View style={{ flexDirection: "row", gap: 3 }}>
@@ -360,6 +375,12 @@ const styles = StyleSheet.create({
         // added
         padding: spacingY._7,
         paddingTop: spacingY._3,
+    },
+    contributorImage: {
+        height: verticalScale(24),
+        width: verticalScale(24),
+        borderRadius: 100,
+        borderWidth: 1,
     },
 	floatingButton: {
 		height: verticalScale(50),

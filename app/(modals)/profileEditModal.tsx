@@ -2,6 +2,7 @@ import Asterisk from '@/components/Asterisk';
 import BackButton from '@/components/BackButton';
 import Button from '@/components/Button';
 import FormInput from '@/components/FormInput';
+import Loading from '@/components/Loading';
 import ModalWrapper from '@/components/ModalWrapper';
 import ScreenHeader from '@/components/ScreenHeader';
 import Typography from '@/components/Typography';
@@ -18,7 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import * as Icons from "phosphor-react-native";
 import React, { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 
 export default function ProfileEditModal() {
@@ -26,7 +27,7 @@ export default function ProfileEditModal() {
     const { user, updateUserData } = useAuth();
     const { Colors, currentTheme } = useTheme();
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({ main: false, tiny: false });
     const [userData, setUserData] = useState<UserDataType>({
         name: "",
         image: null,
@@ -44,6 +45,18 @@ export default function ProfileEditModal() {
     }, [user]);
 
     const handlePickImage = async function() {
+        setLoading({ ...loading, tiny: true })
+        const permissionResult = 
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert(
+                "Permission Required",
+                "Please allow access to your photo library to update your profile picture."
+            );
+            return;
+        }
+
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images', 'videos'],
             // allowsEditing: true,
@@ -54,6 +67,7 @@ export default function ProfileEditModal() {
         if(!result.canceled) {
             setUserData({ ...userData, image: result.assets[0] })
         }
+        setLoading({ ...loading, tiny: false })
     }
 
     const handleSubmit = async function() {
@@ -62,7 +76,7 @@ export default function ProfileEditModal() {
             return Burnt.toast({ title: "Please fill all the fields!" });
         }
 
-        setLoading(true)
+        setLoading({ ...loading, main: true })
         try {
             // services function
             const res = await updateUser(user?.uid! as string, userData);
@@ -75,7 +89,7 @@ export default function ProfileEditModal() {
         } catch(err: any) {
             Burnt.toast({ title: err?.message, haptic: "error" });
         } finally {
-            setLoading(true)
+            setLoading({ ...loading, main: false })
         }
     }
 
@@ -98,11 +112,15 @@ export default function ProfileEditModal() {
                         { shadowColor: Colors.inverseText, backgroundColor: Colors.background300 }]}
                         onPress={handlePickImage}
                     >
-                        <Icons.CameraIcon
-                            weight="fill"
-                            size={verticalScale(20)}
-                            color={Colors.textLighter}
-                        />
+                        {loading?.tiny ? (
+                            <Loading size="small" />
+                        ) : (
+                            <Icons.CameraIcon
+                                weight="fill"
+                                size={verticalScale(20)}
+                                color={Colors.textLighter}
+                            />
+                        )}
                     </TouchableOpacity>
                 </View>
 
@@ -120,7 +138,7 @@ export default function ProfileEditModal() {
         </View>
 
         <View style={[styles.footerArea, { borderTopColor: BaseColors[currentTheme == "dark" ? "neutral700" : "neutral400"] }]}>
-            <Button onPress={handleSubmit} disabled={shouldDisable} style={{ flex: 1 }} loading={loading}>
+            <Button onPress={handleSubmit} disabled={shouldDisable} style={{ flex: 1 }} loading={loading.main}>
                 <Typography size={Platform.OS == "ios" ? 22 : 25} fontFamily="urbanist-semibold" color={BaseColors.white}>Update</Typography>
             </Button>
         </View>

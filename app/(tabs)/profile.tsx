@@ -76,8 +76,21 @@ export default function ProfileScreen() {
         //     text: "Add your bank details to recieve payments",
         //     bgColor: "#D97D55",
         // },
+        // {
+        //     title: "Frequently Asked",
+        //     icon: (
+        //         <Icons.SealQuestionIcon
+        //             size={26}
+        //             color={Colors.text}
+        //             weight="fill"
+        //         />
+        //     ),
+        //     routeName: "/(modals)/faqModal",
+        //     text: "Add your bank details to recieve payments",
+        //     bgColor: "#FEB21A",
+        // },
         {
-            title: "Frequently Asked",
+            title: "Help Center",
             icon: (
                 <Icons.SealQuestionIcon
                     size={26}
@@ -85,8 +98,8 @@ export default function ProfileScreen() {
                     weight="fill"
                 />
             ),
-            routeName: "/(modals)/faqModal",
-            text: "Add your bank details to recieve payments",
+            routeName: "/(modals)/helpModal",
+            text: "Get all the help and support you need",
             bgColor: "#FEB21A",
         },
         // {

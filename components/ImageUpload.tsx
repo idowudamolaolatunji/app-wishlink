@@ -8,7 +8,7 @@ import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import * as Icons from "phosphor-react-native"
 import React from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Typography from './Typography'
 
 
@@ -24,6 +24,17 @@ export default function ImageUpload({
 
     const handlePickImage = async function() {
         try {
+            const permissionResult = 
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+            if (!permissionResult.granted) {
+                Alert.alert(
+                    "Permission Required",
+                    "Please allow access to your photo library to upload a photo"
+                );
+                return;
+            }
+
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ['images'],
                 allowsEditing: true,

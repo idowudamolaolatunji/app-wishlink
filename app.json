@@ -60,6 +60,10 @@
           "faceIDPermission": "Allow Wishers App to use Face ID."
         }
       ],
+      [
+        "expo-image-picker",
+        { "photosPermission": "Allow CribEasy to access your photos" }
+      ],
       "expo-secure-store",
       "expo-notifications"
     ],

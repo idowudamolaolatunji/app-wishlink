@@ -68,7 +68,8 @@ export default function BoostWishlistModal() {
             onSuccess: async (res) => {
                 const status = await processWishlistBoosting(
                     res.reference,
-                    user?.uid!,
+                    // here we added the creator's name and image to the boosting
+                    { name: user?.name, image: user?.image, uid: user?.uid },
                     selectedPlan?.price,
                     params?.id,
                     selectedPlan?.durationInMs!,
@@ -93,6 +94,7 @@ export default function BoostWishlistModal() {
                 <ScreenHeader title="Boost Wishlist" leftElement={<BackButton />} style={{ marginBottom: spacingY._5 }} />
                 
                 <ScrollView
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.contentView}
                 >
                     <View style={{ gap: spacingY._10 }}>

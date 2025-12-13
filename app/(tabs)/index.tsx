@@ -42,6 +42,7 @@ export default function HomeScreen() {
 		"wishlists", [
 			where("currentboostExpiresAt", ">=", new Date().toISOString()), // active boosts
 			orderBy("totalAmountReceived", "desc"), // highest paying first
+			orderBy("lastBoostedAt", "desc"), // most recent boost next
 			orderBy("totalContributors", "desc"), // highestes contributors next
 			orderBy("previousBoostingCount", "desc"), // most recent boost next
 			limit(25)

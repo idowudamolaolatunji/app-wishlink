@@ -9,7 +9,7 @@ export default function ModalWrapper({ style, children, bgColor }: modalWrapperP
     const { Colors } = useTheme();
 
     return (
-        <View style={[styles.container, { backgroundColor: bgColor || Colors.background }]}>
+        <View style={[styles.container, { backgroundColor: bgColor || Colors.background }, style]}>
             {children}
         </View>
     )

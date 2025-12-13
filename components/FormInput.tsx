@@ -22,7 +22,6 @@ export default function FormInput(props: InputProps) {
                 ref={props.inputRef && props.inputRef}
                 {...props}
                 {...props.isPassword && { secureTextEntry: !showPassword ? true : false }}
-                // temps
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
             />

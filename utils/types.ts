@@ -119,7 +119,7 @@ export type IconProps = {
 export type BackButtonProps = {
     style?: ViewStyle;
     iconSize?: number;
-    iconType?: string;
+    iconType?: "back" | "cancel" | "drop";
     customAction?: () => void;
 }
 
@@ -127,6 +127,7 @@ export type HeaderProps = {
     title?: string;
     style?: ViewStyle;
     leftElement?: ReactNode;
+    rightElement?: ReactNode;
 }
 
 export interface InputProps extends TextInputProps {
@@ -273,6 +274,8 @@ export type WishInsightType = {
     icon: React.ReactNode;
     value: string;
     iconbgColor?: string;
+    style?: ViewStyle,
+    useDefaultTheme?: boolean,
 }
 
 
@@ -322,6 +325,7 @@ export type WishItemType = {
     created?: Date;
     active?: boolean;
     isCompleted?: boolean;
+    contributorsImages?: string[];
 }
 
 export type WishlistType = {
@@ -343,6 +347,11 @@ export type WishlistType = {
     currentboostExpiresAt?: string;
     previousBoostingCount?: number;
     lastBoostedAt?: string;
+    contributorsImages?: string[];
+    boostingCreator?: {
+        name: string;
+        image?: string;
+    }
 }
 
 

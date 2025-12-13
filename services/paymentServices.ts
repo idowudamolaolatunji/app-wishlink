@@ -1,6 +1,6 @@
 import { firestore } from "@/config/firebase";
 import { generateSlug } from "@/utils/helpers";
-import { AppTransactionType, BankAccountType, ResponseType } from "@/utils/types";
+import { AppTransactionType, BankAccountType, ResponseType, UserType } from "@/utils/types";
 import { collection, doc, increment, setDoc, updateDoc } from "firebase/firestore";
 
 export const processOneTimePayment = async function(reference: string, uid: string, amount: number): Promise<ResponseType> {
@@ -36,7 +36,7 @@ export const processOneTimePayment = async function(reference: string, uid: stri
 }
 
 
-export const processWishlistBoosting = async function(reference: string, uid: string, amount: number, wishlistId: string, durationInMS: number): Promise<ResponseType> {
+export const processWishlistBoosting = async function(reference: string, creator: Partial<UserType>, amount: number, wishlistId: string, durationInMS: number): Promise<ResponseType> {
     try {
         const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
             method: "GET",
@@ -56,7 +56,7 @@ export const processWishlistBoosting = async function(reference: string, uid: st
             type: "boosting",
             status: result?.status,
             currency: result?.currency,
-            uid, refId: reference,
+            uid: creator?.uid, refId: reference,
             paidAt: result.paidAt,
         } as AppTransactionType
 
@@ -72,6 +72,10 @@ export const processWishlistBoosting = async function(reference: string, uid: st
             currentboostExpiresAt: new Date(Date.now() + durationInMS!).toISOString(),
             lastBoostedAt: new Date().toISOString(),
             previousBoostingCount: increment(1),
+            boostingCreator: {
+                name: creator?.name,
+                image: creator?.image || ""
+            }
         });
 
         return { success: true }
