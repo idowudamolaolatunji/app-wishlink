@@ -12,8 +12,9 @@ import { FontAwesome } from '@expo/vector-icons'
 import * as Burnt from "burnt"
 import * as Clipboard from "expo-clipboard"
 import { Image } from 'expo-image'
+import { useLocalSearchParams } from 'expo-router'
 import * as Icons from "phosphor-react-native"
-import React, { useState } from 'react'
+import React from 'react'
 import { Dimensions, Linking, Platform, Pressable, ScrollView, Share, StatusBar, StyleSheet, View } from 'react-native'
 
 const isIOS = Platform.OS === "ios";
@@ -22,7 +23,7 @@ const { height } = Dimensions.get("window");
 export default function ReferralsModal() {
     const { user } = useAuth();
     const { Colors } = useTheme();
-    const [copied, setCopied] = useState(false);
+    const { referralEarnings }: { referralEarnings: string } = useLocalSearchParams();
 
     const openFacebook = async function() {
         const url = `fb://share?text=Join%20Wishers%20App,%20using%20my%20referral%20code`;
@@ -83,14 +84,14 @@ export default function ReferralsModal() {
                     <View style={styles.insights}>
                         <WishInsight
                             title="Total Referals"
-                            value="0"
+                            value={`${user?.referralsCount || 0}`}
                             icon={<Icons.UsersThreeIcon size={24}  weight="bold" color="#1e40af" />}
                             iconbgColor="#dbeafe"
                             useDefaultTheme={false}
                         />
                         <WishInsight
                             title="Total Earned"
-                            value={formatCurrency(0)}
+                            value={formatCurrency(Number(referralEarnings) || 0)}
                             icon={<Icons.MoneyIcon size={24} weight="bold" color="#9f1239" />}
                             iconbgColor="#fce7f3"
                             useDefaultTheme={false}

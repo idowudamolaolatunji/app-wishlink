@@ -73,6 +73,7 @@ export default function BoostWishlistModal() {
                     selectedPlan?.price,
                     params?.id,
                     selectedPlan?.durationInMs!,
+                    selectedPlan?.name,
                 );
                 if(status.success) {
                     setTimeout(function() {
@@ -106,7 +107,8 @@ export default function BoostWishlistModal() {
                                     contentFit="cover"
                                     source={params?.image}
                                     style={{
-                                        height: verticalScale(100),
+                                        // height: verticalScale(100),
+                                        height: verticalScale(92),
                                         width: verticalScale(80),
                                         borderRadius: radius._6,
                                         backgroundColor: Colors.background300,

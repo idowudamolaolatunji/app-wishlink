@@ -7,7 +7,7 @@ import { Image, ImageBackground, Pressable, StyleSheet, View } from 'react-nativ
 import Typography from "./Typography";
 
 
-export default function HomeReferral({ handleClose }: { handleClose: () => void }) {
+export default function HomeReferral({ handleClose, referralEarnings }: { handleClose: () => void, referralEarnings?: number }) {
     const router = useRouter();
 
 	return (
@@ -47,7 +47,7 @@ export default function HomeReferral({ handleClose }: { handleClose: () => void 
                         when they use your referral code
                     </Typography>
                     
-                    <Pressable style={styles.referralBtn} onPress={() => router.push("/(modals)/referralsModal")}>
+                    <Pressable style={styles.referralBtn} onPress={() => router.push({ pathname: "/(modals)/referralsModal", params: { referralEarnings: referralEarnings } })}>
                         <Typography fontFamily="urbanist-bold" size={verticalScale(19)} color={BaseColors.white}>See Details</Typography>
                         <Icons.ArrowRightIcon
                             size={19}

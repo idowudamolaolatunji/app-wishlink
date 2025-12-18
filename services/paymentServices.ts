@@ -36,7 +36,7 @@ export const processOneTimePayment = async function(reference: string, uid: stri
 }
 
 
-export const processWishlistBoosting = async function(reference: string, creator: Partial<UserType>, amount: number, wishlistId: string, durationInMS: number): Promise<ResponseType> {
+export const processWishlistBoosting = async function(reference: string, creator: Partial<UserType>, amount: number, wishlistId: string, durationInMS: number, planName: string): Promise<ResponseType> {
     try {
         const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
             method: "GET",
@@ -71,6 +71,7 @@ export const processWishlistBoosting = async function(reference: string, creator
         await updateDoc(wishlistRef, {
             currentboostExpiresAt: new Date(Date.now() + durationInMS!).toISOString(),
             lastBoostedAt: new Date().toISOString(),
+            lastBoostingPlanName: planName,
             previousBoostingCount: increment(1),
             boostingCreator: {
                 name: creator?.name,

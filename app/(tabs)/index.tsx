@@ -30,7 +30,7 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 
 	const { data, loading: walletLoading, refetch: refetchWallet } = useFetchData<WalletType>(
-		"wallets", (user?.uid) ? [where("uid", "==", user.uid), limit(50)] : [],
+		"wallets", (user?.uid) ? [where("uid", "==", user.uid), limit(1)] : [],
 	);
 	const wallet = data?.[0];
 
@@ -167,7 +167,12 @@ export default function HomeScreen() {
 
 
 					{/* REFERRAL */}
-					{showBanner && <HomeReferral handleClose={() => setShowBanner(false)} />}
+					{showBanner && (
+						<HomeReferral
+							handleClose={() => setShowBanner(false)}
+							referralEarnings={wallet?.referralEarnings}
+						/>
+					)}
 
 					{/* FEATURED WISHLISTS */}
 					{(featuredLoading || featuredWishlists?.length > 0) && (

@@ -171,6 +171,7 @@ export type UserType = {
     isActive?: boolean;
     createdAt?: boolean;
     expoPushTokens?: string[];
+    referralsCount?: number,
 } | null;
 
 export type UserDataType = {
@@ -283,9 +284,8 @@ export type WishInsightType = {
 
 export type TransactionType = {
     id?: string;
-    type: string;
+    type: "withdrawal" | "contribution" | string;
     amount: number;
-    description?: string;
     charges?: number;
     refId?: string;
     uid: string;
@@ -294,6 +294,12 @@ export type TransactionType = {
     currency: string;
     // paidAt: Date | Timestamp | string;
     paidAt: string;
+    //////////////////////
+    // for withdrawal
+    recieverBank?: string;
+    recieverAcctNumber?: string;
+    recieverName?: string;
+    description?: string;
 };
 
 
@@ -351,6 +357,7 @@ export type WishlistType = {
     currentboostExpiresAt?: string;
     previousBoostingCount?: number;
     lastBoostedAt?: string;
+    lastBoostingPlanName?: string;
     contributorsImages?: string[];
     boostingCreator?: {
         name: string;

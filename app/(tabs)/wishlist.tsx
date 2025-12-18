@@ -284,7 +284,9 @@ function WishListItem({ item, index, handleOpenDetails }: {
                     style={[styles.cardImage, { backgroundColor: Colors.background300 }]}
                 />
 
-                <LottieView source={require("@/assets/lottie/rocket.json")} loop autoPlay style={{ width: 24, height: 24, marginTop: -7, position: "absolute", top: "5%", right: "5%" }} />
+                {(item?.currentboostExpiresAt! > new Date().toISOString()) && (
+                    <LottieView source={require("@/assets/lottie/rocket.json")} loop autoPlay style={{ width: 24, height: 24, marginTop: -7, position: "absolute", top: "5%", right: "5%" }} />
+                )}
                 
                 <View style={styles.cardDetails}>
                     <Typography

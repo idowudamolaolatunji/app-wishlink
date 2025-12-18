@@ -141,6 +141,7 @@ export default function wishlistDetailModal() {
             pathname: "/(modals)/boostDetailsModal",
             params: {
                 id: wishlist?.id,
+                slug: wishlist?.slug,
                 title: wishlist?.title,
                 image: wishlist?.image,
                 totalAmountReceived: wishlist?.totalAmountReceived,
@@ -148,6 +149,7 @@ export default function wishlistDetailModal() {
                 totalContributors: wishlist?.totalContributors,
                 currentboostExpiresAt: wishlist?.currentboostExpiresAt,
                 lastBoostedAt: wishlist?.lastBoostedAt,
+                lastBoostingPlanName: wishlist?.lastBoostingPlanName,
                 previousBoostingCount: wishlist?.previousBoostingCount,
             }
         })

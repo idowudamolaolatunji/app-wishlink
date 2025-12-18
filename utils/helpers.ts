@@ -42,7 +42,7 @@ export function calculatePercentage(current: number, target: number): number {
 
 export function formatDateFull(dateString: string): string {
 	const date = moment(dateString);
-    return date.format('DD, MMM YYYY [at] hh:mm:ss a');
+    return date.format('Do, MMM YYYY [at] hh:mm a');
 }
 
 
@@ -75,3 +75,32 @@ export function formatDate(dateString: string): string {
 		return `${yearsAgo} year${yearsAgo > 1 ? 's' : ''} ago`;
 	}
 }
+
+
+export const calculateTimeLeft = (targetTime: any) => {
+	const now = moment();
+	const target = moment(targetTime);
+
+	const timeLeft = target.diff(now);
+
+	if (timeLeft <= 0) {
+		return {
+			days: 0,
+			hours: '00',
+			minutes: '00',
+			seconds: '00',
+		};
+	}
+
+	const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+	const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+	const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+	const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+	return {
+		days,
+		hours: hours.toString().padStart(2, '0'),
+		minutes: minutes.toString().padStart(2, '0'),
+		seconds: seconds.toString().padStart(2, '0'),
+	};
+};

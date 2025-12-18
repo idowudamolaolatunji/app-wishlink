@@ -90,10 +90,22 @@ export default function TransactionDetailsModal() {
                                     <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[currentTheme == "dark" ? "neutral500" : "neutral400"]}>Fee</Typography>
                                     <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={Colors.text}>{formatCurrency(item?.charges || 0)}</Typography>
                                 </View>
-                                {/* <View style={styles.bodyDetail}>
-                                    <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[currentTheme == "dark" ? "neutral500" : "neutral400"]}>Recieving Bank</Typography>
-                                    <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={Colors.text} style={{ textTransform: "capitalize" }}>{item?.type}</Typography>
-                                </View> */}
+                                {item?.type == "withdrawal" && (
+                                    <React.Fragment>
+                                        <View style={styles.bodyDetail}>
+                                            <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[currentTheme == "dark" ? "neutral500" : "neutral400"]}>Recieving Bank</Typography>
+                                            <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={Colors.text} style={{ textTransform: "capitalize" }}>{item?.recieverBank}</Typography>
+                                        </View>
+                                        <View style={styles.bodyDetail}>
+                                            <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[currentTheme == "dark" ? "neutral500" : "neutral400"]}>Reciever Name</Typography>
+                                            <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={Colors.text} style={{ textTransform: "capitalize" }}>{item?.recieverName}</Typography>
+                                        </View>
+                                        <View style={styles.bodyDetail}>
+                                            <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[currentTheme == "dark" ? "neutral500" : "neutral400"]}>Recieving Bank Acct.</Typography>
+                                            <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={Colors.text} style={{ textTransform: "capitalize" }}>{item?.recieverAcctNumber}</Typography>
+                                        </View>
+                                    </React.Fragment>
+                                )}
                                 <View style={styles.bodyDetail}>
                                     <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[currentTheme == "dark" ? "neutral500" : "neutral400"]}>Status</Typography>
                                     <Typography fontFamily="urbanist-semibold" size={verticalScale(20)} color={BaseColors[item?.status == "success" ? "primaryLight" : "red"]} style={{ textTransform: "capitalize" }}>{item?.status == "success" ? "Successful" : item?.status}</Typography>

@@ -32,7 +32,6 @@ export default function ContributorModal() {
 	);
 
 	const contributor = contibutorData?.[0];
-	console.log(contributor?.wishSlug)
 	const { data: wishData } = useFetchData<WishItemType>(
 		"wishitems", (contributor?.wishSlug) ? [where("uid", "==", user?.uid), where("slug", "==", contributor?.wishSlug)] : [],
 	);

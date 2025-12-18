@@ -82,7 +82,7 @@ export default function RootLayout() {
 									]}
 									publicKey={process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY!}
 								>
-									<View style={{ flex: 1, paddingBottom: verticalScale(sysNavigationHeight), }}>
+									<View style={{ flex: 1, paddingBottom: verticalScale(sysNavigationHeight - 4), }}>
 										<Stack screenOptions={{ headerShown: false }}>
 											<Stack.Screen name="index" />
 											<Stack.Screen name="(modals)/profileEditModal" options={{ presentation: "modal" }} />
@@ -99,10 +99,10 @@ export default function RootLayout() {
 											<Stack.Screen name="(modals)/createEditWishItemModal" options={{ presentation: "modal" }} />
 											<Stack.Screen name="(modals)/seeMoreFeaturedWishlistsModal" options={{ presentation: "modal" }} />
 											<Stack.Screen name="(modals)/boostWishlistModal" options={{ presentation: "modal" }} />
-											<Stack.Screen name="(modals)/boostDetailsModal" options={{ presentation: "modal" }} />
 											<Stack.Screen name="(modals)/notificationModal" options={{ presentation: "modal" }} />
 
 											<Stack.Screen name="(modals)/referralsModal" options={{ presentation: "formSheet" }} />
+											<Stack.Screen name="(modals)/boostDetailsModal" options={{ presentation: "formSheet" }} />
 											<Stack.Screen name="(modals)/withdrawalModal" options={{ presentation: "formSheet" }} />
 											<Stack.Screen name="(modals)/deleteAccountModal" options={{ presentation: "formSheet" }} />
 											<Stack.Screen name="(modals)/passwordChangeModal" options={{ presentation: "formSheet" }} />

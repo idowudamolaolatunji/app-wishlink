@@ -8,7 +8,7 @@ import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, increment, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 
 
@@ -128,6 +128,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode}> = function({ c
                 if (querySnapshot.size > 0) {
                     const referrer = querySnapshot.docs[0].data() as UserType;
                     referrerUid = referrer?.uid;
+
+                    // Update referral count
+                    const referrerDocRef = doc(firestore, "users", querySnapshot?.docs[0]?.id);
+                    await updateDoc(referrerDocRef, {
+                        referralsCount: increment(1)
+                    });
                 }
             }
 
