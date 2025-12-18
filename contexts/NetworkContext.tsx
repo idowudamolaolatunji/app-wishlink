@@ -12,8 +12,6 @@ interface NetworkContextType {
 
 const NetworkContext = createContext<NetworkContextType>({ isConnected: true });
 
-export const useNetwork = () => useContext(NetworkContext);
-
 export const NetworkProvider = ({ children }: { children: React.ReactNode }) => {
 	const [isConnected, setIsConnected] = useState(true);
 	const [showReconnected, setShowReconnected] = useState(false);
@@ -96,7 +94,7 @@ export const NetworkProvider = ({ children }: { children: React.ReactNode }) => 
 				style={[
 					styles.banner,
 					{
-						backgroundColor: showReconnected ? "#10B981" : "#00419C",
+						backgroundColor: showReconnected ? "#10B981" : BaseColors.rose,
 						opacity: fadeAnim,
 						transform: [{ translateY: slideAnim }],
 					},
@@ -156,3 +154,5 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 });
+
+export const useNetwork = () => useContext(NetworkContext);

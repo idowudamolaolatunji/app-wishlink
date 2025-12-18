@@ -1,9 +1,11 @@
 import ContributionList from "@/components/ContributionList";
 import FeaturedWishlists from "@/components/FeaturedWishlists";
 import HomeReferral from "@/components/HomeReferral";
+import NetworkNotConnected from "@/components/NetworkNotConnected";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { BaseColors, radius, spacingX, spacingY } from '@/constants/theme';
 import { useAuth } from "@/contexts/AuthContext";
+import { useNetwork } from "@/contexts/NetworkContext";
 import { useNotification } from "@/contexts/NotificationContext";
 import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
@@ -22,6 +24,7 @@ import { scale, verticalScale } from '../../utils/styling';
 export default function HomeScreen() {
 	const router = useRouter();
 	const { user } = useAuth();
+	const { isConnected } = useNetwork();
 	const { notificationCount } = useNotification();
 	const { Colors, currentTheme } = useTheme();
 	const displayName = user?.name?.split(" ").slice(0, 2).join(" ")
@@ -42,7 +45,7 @@ export default function HomeScreen() {
 		"wishlists", [
 			where("currentboostExpiresAt", ">=", new Date().toISOString()), // active boosts
 			orderBy("totalAmountReceived", "desc"), // highest paying first
-			orderBy("lastBoostedAt", "desc"), // most recent boost next
+			// orderBy("lastBoostedAt", "desc"), // most recent boost next
 			orderBy("totalContributors", "desc"), // highestes contributors next
 			orderBy("previousBoostingCount", "desc"), // most recent boost next
 			limit(25)
@@ -175,7 +178,7 @@ export default function HomeScreen() {
 					)}
 
 					{/* FEATURED WISHLISTS */}
-					{(featuredLoading || featuredWishlists?.length > 0) && (
+					{(featuredLoading || featuredWishlists?.length > 0 && isConnected) && (
 						<FeaturedWishlists
 							data={featuredWishlists as WishlistType[]}
 							loading={featuredLoading}
@@ -192,13 +195,17 @@ export default function HomeScreen() {
 						</Typography>
 					)}
 
-					{!error && (
+					{(!error && isConnected) && (
 						<ContributionList
 							title="Recent Givers"
 							data={contributors as ContributorType[]}
 							loading={contributorLoading}
 							emptyListMessage="No givers yet!"
 						/>
+					)}
+
+					{!isConnected && (
+						<NetworkNotConnected />
 					)}
 				</ScrollView>
 			</View>

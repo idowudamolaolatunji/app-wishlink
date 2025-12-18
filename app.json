@@ -13,11 +13,14 @@
       "infoPlist": {
         "bundleIdentifier": "com.wishers.app",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "com.wishers.app"
     },
     "android": {
-      "icon": "./assets/images/favicon.png",
-      "adaptiveIcon": {},
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/favicon.png",
+        "monochromeImage": "./assets/images/favicon.png"
+      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -26,7 +29,6 @@
       ],
       "package": "com.wishers.app",
       "googleServicesFile": "./google-services.json"
-      // "scheme": "wishers"
     },
     "web": {
       "output": "static",
@@ -37,8 +39,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/favicon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/favicon-big.png",
+          "imageWidth": 180,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
@@ -62,7 +64,9 @@
       ],
       [
         "expo-image-picker",
-        { "photosPermission": "Allow CribEasy to access your photos" }
+        {
+          "photosPermission": "Allow CribEasy to access your photos"
+        }
       ],
       "expo-secure-store",
       "expo-notifications"

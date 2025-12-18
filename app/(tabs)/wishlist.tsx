@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
+import NetworkNotConnected from "@/components/NetworkNotConnected";
 import Rangebar from "@/components/Rangebar";
 import ScreenHeader from "@/components/ScreenHeader";
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -10,6 +11,7 @@ import WishInsight from "@/components/WishInsight";
 import { BaseColors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAppContext } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNetwork } from "@/contexts/NetworkContext";
 import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
 import { getFilePath, getProfileImage } from "@/services/imageService";
@@ -36,6 +38,7 @@ export default function WishlistScreen() {
 	const router = useRouter();
     const { popup } = usePaystack();
     const { actions } = useAppContext();
+    const { isConnected } = useNetwork();
 	const { Colors, currentTheme } = useTheme();
     const { user, updateUserData } = useAuth();
 
@@ -172,7 +175,7 @@ export default function WishlistScreen() {
                         </View>
                     )}
 
-                    {(!loading && data.length > 0) && (
+                    {(!loading && data.length > 0 && isConnected) && (
                         <FlashList
                             data={data}
                             renderItem={({ item, index }: { item: WishlistType; index: number; }) => (
@@ -188,7 +191,7 @@ export default function WishlistScreen() {
                         />
                     )}
 
-                    {(!loading && data.length < 1) && (
+                    {(!loading && data.length < 1 && isConnected) && (
                         <View
                             style={{
                                 alignItems: "center",
@@ -211,15 +214,21 @@ export default function WishlistScreen() {
                             </Typography>
                         </View>
                     )}
+
+                    {!isConnected && (
+                        <NetworkNotConnected location="wishlist" />
+                    )}
                 </ScrollView>
                 
-                <Button style={styles.floatingButton} onPress={handleAddWishlist}>
-                    <Icons.PlusIcon
-                        color={BaseColors.white}
-                        weight="bold"
-                        size={verticalScale(24)}
-                    />
-                </Button>
+                {isConnected && (
+                    <Button style={styles.floatingButton} onPress={handleAddWishlist}>
+                        <Icons.PlusIcon
+                            color={BaseColors.white}
+                            weight="bold"
+                            size={verticalScale(24)}
+                        />
+                    </Button>
+                )}
             </View>
 
             {/* COMPLETED PAYMENT */}

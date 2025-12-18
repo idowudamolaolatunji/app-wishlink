@@ -2,12 +2,14 @@ import BankDetail from "@/components/BankDetail";
 import Button from "@/components/Button";
 import FormInput from "@/components/FormInput";
 import Loading from "@/components/Loading";
+import NetworkNotConnected from "@/components/NetworkNotConnected";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typography from "@/components/Typography";
 import { auth } from "@/config/firebase";
 import { BaseColors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAppContext } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNetwork } from "@/contexts/NetworkContext";
 import { useBiometricAuth } from "@/hooks/useBiometricsAuth";
 import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
@@ -31,6 +33,7 @@ import { formatCurrency } from '../../utils/helpers';
 export default function WalletScreen() {
 	const router = useRouter();
 	const { actions } = useAppContext();
+	const { isConnected } = useNetwork();
 	const { user, biometricEnabled } = useAuth();
 	const { Colors, currentTheme } = useTheme();
 	const { authenticate, isBiometricSupported, isEnrolled } = useBiometricAuth();
@@ -173,7 +176,7 @@ export default function WalletScreen() {
 					scrollEnabled={true}
 					contentContainerStyle={[styles.withdrawalView, { backgroundColor: Colors[currentTheme == "dark" ? "background300" : "cardBackground"] }]}
 				>
-					{bankLoading ? <Loading /> : (
+					{(bankLoading && isConnected) ? <Loading /> : (isConnected) && ( 
 						<React.Fragment>
 							{(withdrawalSteps === 1 && !bankDetail) && (
 								<React.Fragment>
@@ -374,6 +377,10 @@ export default function WalletScreen() {
 								</Animated.View>
 							)}
 						</React.Fragment>
+					)}
+
+					{!isConnected && (
+						<NetworkNotConnected location="wallet" />
 					)}
 				</ScrollView>
             </ScrollView>

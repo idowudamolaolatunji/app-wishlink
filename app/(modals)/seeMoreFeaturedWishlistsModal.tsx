@@ -1,13 +1,11 @@
 import BackButton from "@/components/BackButton";
-import Button from "@/components/Button";
-import FormInput from "@/components/FormInput";
 import Loading from "@/components/Loading";
 import ModalWrapper from "@/components/ModalWrapper";
 import Rangebar from "@/components/Rangebar";
 import ScreenHeader from "@/components/ScreenHeader";
 import Typography from "@/components/Typography";
 import WishlistCreator from "@/components/WishlistCreator";
-import { BaseColors, radius, spacingX, spacingY } from "@/constants/theme";
+import { BaseColors, radius, spacingY } from "@/constants/theme";
 import useFetchData from "@/hooks/useFetchData";
 import { useTheme } from "@/hooks/useTheme";
 import { getFilePath, getProfileImage } from "@/services/imageService";
@@ -29,7 +27,7 @@ export default function SeeMoreFeaturedWishlistsModal() {
     const router = useRouter();
     const { Colors, currentTheme } = useTheme();
 
-    const [searchQuery, setSearchQuery] = useState("");
+    // const [searchQuery, setSearchQuery] = useState("");
     const [refreshing, setRefreshing] = useState(false);
 
     const { data: featuredWishlists, loading: featuredLoading, refetch: refetchFeatured } = useFetchData<WishlistType>(
@@ -39,7 +37,7 @@ export default function SeeMoreFeaturedWishlistsModal() {
 			orderBy("lastBoostedAt", "desc"), // most recent boost next
 			orderBy("totalAmountReceived", "desc"), // highest paying first
 			orderBy("totalContributors", "desc"), // highestes contributors next
-			limit(25)
+			limit(100)
         ],
     );
 
@@ -58,7 +56,7 @@ export default function SeeMoreFeaturedWishlistsModal() {
             <View style={styles.container}>
                 <ScreenHeader title="Featured Wishlists" leftElement={<BackButton />} style={{ marginBottom: spacingY._15 }} />
                 
-                <View style={{ flexDirection: "row" , alignItems: "center", gap: spacingX._10 }}>
+                {/* <View style={{ flexDirection: "row" , alignItems: "center", gap: spacingX._10 }}>
                     <FormInput
                         placeholder="Search wishlists"
                         icon={<Icons.MagnifyingGlassIcon size={verticalScale(24)} color={BaseColors.primary} weight="bold" />}
@@ -70,7 +68,7 @@ export default function SeeMoreFeaturedWishlistsModal() {
                     <Button style={{ paddingHorizontal: spacingX._15 }}>
                         <Icons.SlidersHorizontalIcon color={BaseColors.white} size={verticalScale(25)} weight="bold" />
                     </Button>
-                </View>
+                </View> */}
 
                 <ScrollView
                     bounces={false}
