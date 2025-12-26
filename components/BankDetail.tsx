@@ -18,7 +18,7 @@ import ScreenHeader from "./ScreenHeader";
 interface Props {
     bankName: string;
     accountName: string;
-    accountNumber: number;
+    accountNumber: string;
     loading?: boolean;
     handleDeleteBankWithPassword: (p: string) => void;
     handleDeleteBankWithBiometrics: () => void;

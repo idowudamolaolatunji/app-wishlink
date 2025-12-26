@@ -62,6 +62,7 @@ export type AppActionType = {
     plans: BoostingPlanType[];
     minWithdrawalAmount: number; // 100
     appWithdrawalPercentage: number; // 8
+    bankDetails: BankAccountType;
 }
 
 export type AppTransactionType = {
@@ -259,10 +260,12 @@ export type BankAccountType = {
     id?: string;
     uid?: string;
     bankName: string;
-    accountNumber: number;
-    bankCode?: number;
+    accountNumber: string;
+    bankCode?: string;
     accountName: string;
     currency?: string;
+    country?: string;
+    recipientCode?: string;
     createdAt?: Date;
 }
 
@@ -290,11 +293,14 @@ export type TransactionType = {
     charges?: number;
     refId?: string;
     uid: string;
-    wishId?: string;
     status: string;
     currency: string;
     // paidAt: Date | Timestamp | string;
     paidAt: string;
+    //////////////////////
+    // for contribution
+    wishId?: string;
+    wishSlug?: string;
     //////////////////////
     // for withdrawal
     recieverBank?: string;
@@ -385,8 +391,12 @@ export type NotificationType = {
     referenceToID?: string;
 }
 
-export type WithdrawalChargesType = {
-    profit: number;
+export type WithdrawalAmountDetails = {
+    amount_entered: string;
+    amount_to_pay: string;
+    appProfit: number;
     totalDeduction: number;
-    paystack: number;
+    paystackFee: number;
+    appPercentage: number;
+    referrerGain: number;
 }

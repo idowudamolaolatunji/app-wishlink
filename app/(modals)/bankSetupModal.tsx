@@ -10,6 +10,7 @@ import { BaseColors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 import { addBankDetails, handleFetchBanks, handleResolveAccount } from "@/services/bankServices";
+import { transferRecipient } from "@/services/paystackServices";
 import { scale, verticalScale } from "@/utils/styling";
 import * as Burnt from "burnt";
 import { useRouter } from "expo-router";
@@ -73,6 +74,7 @@ export default function BankSetupModal() {
                     setBankData({ ...bankData, accountName });
                     setResolveFound({ status: true, foundName: accountName, message: "" });
                 }
+				// console.log(bankData, result)
 
             } catch(err: any) {
                 if (err?.name !== "AbortError") return err?.message
@@ -104,12 +106,23 @@ export default function BankSetupModal() {
 		}
 		setLoading({ ...loading, main: true });
 
+		const recipientData = {
+			type: 'nuban',
+			name: accountName,
+			account_number: accountNumber,
+			bank_code: bankName?.code!,
+			currency: bankName?.currency || "NGN",
+		};
+		const recipientCode = await transferRecipient(recipientData);
+
 		const data = {
 			uid: user?.uid,
 			bankName: bankName?.name,
-			accountName: accountName,
-			accountNumber: +accountNumber,
-			bankCode: +bankName?.code,
+			accountName,
+			accountNumber,
+			bankCode: bankName?.code,
+			currency: bankName?.currency || "NGN",
+			recipientCode: recipientCode?.success ? recipientCode?.data?.code : "",
 		}
 
 		try {

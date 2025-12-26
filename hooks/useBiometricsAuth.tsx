@@ -1,3 +1,4 @@
+import * as Burnt from "burnt";
 import * as LocalAuthentication from "expo-local-authentication";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
@@ -27,6 +28,10 @@ export function useBiometricAuth() {
 				fallbackLabel: "Use Password",
 				disableDeviceFallback: false,
 			});
+			if(!result?.success) {
+				Burnt.toast({ haptic: "error", title: "Authentication canceled" })
+				return false
+			};
 
 			return result.success;
 		} catch (error) {

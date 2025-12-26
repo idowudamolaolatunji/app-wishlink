@@ -16,7 +16,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { deleteBankDetails } from "@/services/bankServices";
 import { processWithdrawalTransaction } from "@/services/paymentServices";
 import { verticalScale } from "@/utils/styling";
-import { BankAccountType, WalletType } from "@/utils/types";
+import { BankAccountType, WalletType, WithdrawalAmountDetails } from "@/utils/types";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Burnt from "burnt";
 import { Image } from "expo-image";
@@ -42,11 +42,19 @@ export default function WalletScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const [loading, setLoading] = useState({ delete: false, process: false })
 	const [showModal, setShowModal] = useState({ delete_completed: false });
-	const [withdrawalAmount, setWithdrawalAmount] = useState({ amount_entered: "", amount_to_pay: "" });
+	const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalAmountDetails>({
+		amount_entered: "",
+		amount_to_pay: "",
+		appProfit: 0,
+		paystackFee: 0,
+		appPercentage: 0,
+		referrerGain: 0, 
+		totalDeduction: 0,
+	});
 	const [withdrawalSteps, setWithdrawalSteps] = useState<number | 1 | 2>(1);
-	const [charges, setcharges] = useState({ profit: 0, totalDeduction: 0, paystack: 0 })
 	const [insufficientFund, setInsufficientFund] = useState(false);
 	const [password, setPassword] = useState("");
+	// const [charges, setcharges] = useState({ profit: 0, totalDeduction: 0, paystack: 0, percentage: 0 })
 
 	const amountInputRef = useRef<TextInput | any>(null);
     const biometricsIsEnabled = isBiometricSupported && isEnrolled && biometricEnabled;
@@ -73,7 +81,15 @@ export default function WalletScreen() {
 		React.useCallback(function() {
 			refetchWallet();
 			setWithdrawalSteps(1);
-			setWithdrawalAmount({ amount_entered: "", amount_to_pay: "" });
+			setWithdrawalAmount({
+				amount_entered: "",
+				amount_to_pay: "",
+				appProfit: 0,
+				appPercentage: 0,
+				referrerGain: 0,
+				totalDeduction: 0,
+				paystackFee: 0,
+			});
 		}, [])
 	);
 
@@ -86,19 +102,36 @@ export default function WalletScreen() {
 
 	useEffect(function() {
 		if(+withdrawalAmount?.amount_entered > 1) {
-			const appPercent = ((actions?.appWithdrawalPercentage! / 100) * +withdrawalAmount?.amount_entered).toFixed(0);
+			const appProfit = ((actions?.appWithdrawalPercentage! / 100) * Number(withdrawalAmount?.amount_entered)).toFixed(0);
+			const referrerGain = (0.01 * Number(withdrawalAmount?.amount_entered));
+
 			setWithdrawalAmount({
 				...withdrawalAmount,
-				amount_to_pay: (+withdrawalAmount?.amount_entered - +appPercent - paystackTransferFee(+withdrawalAmount?.amount_entered)).toString()
+				amount_to_pay: (+withdrawalAmount?.amount_entered - +appProfit - paystackTransferFee(+withdrawalAmount?.amount_entered)).toString(),
+				appProfit: Number(appProfit),
+				totalDeduction: (Number(appProfit) - paystackTransferFee(Number(withdrawalAmount?.amount_entered))),
+				paystackFee: paystackTransferFee(+withdrawalAmount?.amount_entered),
+				appPercentage: actions?.appWithdrawalPercentage!,
+				referrerGain,
 			})
-			setcharges({
-				profit: +appPercent,
-				totalDeduction: (+appPercent - paystackTransferFee(+withdrawalAmount?.amount_entered)),
-				paystack: paystackTransferFee(+withdrawalAmount?.amount_entered)
-			})
+			// setcharges({
+			// 	profit: +appProfit,
+			// 	// profit + pay
+			// 	totalDeduction: (+appProfit - paystackTransferFee(+withdrawalAmount?.amount_entered)),
+			// 	paystack: paystackTransferFee(+withdrawalAmount?.amount_entered),
+			// 	percentage: actions?.appWithdrawalPercentage!
+			// })
 		} else {
-			setWithdrawalAmount({ ...withdrawalAmount, amount_to_pay: "" });
-			setcharges({ profit: 0, totalDeduction: 0, paystack: 0 })
+			setWithdrawalAmount({
+				...withdrawalAmount,
+				amount_to_pay: "",
+				appProfit: 0,
+				totalDeduction: 0,
+				paystackFee: 0,
+				appPercentage: 0,
+				referrerGain: 0
+			});
+			// setcharges({ profit: 0, totalDeduction: 0, paystack: 0, percentage: actions?.appWithdrawalPercentage! })
 		}
 
 		setInsufficientFund(false);
@@ -133,7 +166,9 @@ export default function WalletScreen() {
 		setLoading({ ...loading, delete: true })
 
 		try {
-			await authenticate();
+			const success = await authenticate();
+			if(!success) return;
+
 			setShowModal({ ...showModal, delete_completed: true })
 			setWithdrawalSteps(1);
 
@@ -170,15 +205,17 @@ export default function WalletScreen() {
 		if(!password) return Burnt.toast({ haptic: "error", title: "Enter your password!" })
 		setLoading({ ...loading, process: true });
 
-		const user = auth?.currentUser;
+		const currUser = auth?.currentUser;
 		
 		// Reauthenticate
-		const credential = EmailAuthProvider.credential(user?.email!, password);
-		await reauthenticateWithCredential(user!, credential);
+		const credential = EmailAuthProvider.credential(currUser?.email!, password);
+		await reauthenticateWithCredential(currUser!, credential);
 
 		try {
 			// amount to withdraw, bank details, profit, paystack charges
-			const status = await processWithdrawalTransaction(user?.uid!, +withdrawalAmount?.amount_to_pay, bankDetail, charges)
+			const status = await processWithdrawalTransaction(
+				user?.uid!, withdrawalAmount, bankDetail, user?.referredBy!
+			)
 			if(!status.success) {
 				throw new Error(status?.msg);
 			}
@@ -195,9 +232,13 @@ export default function WalletScreen() {
 	const handleFinalizeWithdrawalWithBiometrics = async function() {
 		setLoading({ ...loading, process: true });
 		
-		await authenticate();
 		try {
-			const status = await processWithdrawalTransaction(user?.uid!, +withdrawalAmount?.amount_to_pay, bankDetail, charges)
+			const success = await authenticate();
+			if(!success) return;
+
+			const status = await processWithdrawalTransaction(
+				user?.uid!, withdrawalAmount, bankDetail, user?.referredBy!
+			)
 			if(!status.success) {
 				throw new Error(status?.msg);
 			}
@@ -330,7 +371,7 @@ export default function WalletScreen() {
 
 												<Icons.ArrowsDownUpIcon size={verticalScale(24)} color={Colors.neutral400} weight="regular" />
 
-												<Typography size={16} fontFamily="urbanist-semibold" color={BaseColors.neutral400}>{actions?.appWithdrawalPercentage}%{charges?.paystack > 0 ? " + " + formatCurrency(charges?.paystack) : ""} of {formatCurrency(+withdrawalAmount?.amount_entered || 0)}</Typography>
+												<Typography size={16} fontFamily="urbanist-semibold" color={BaseColors.neutral400}>{actions?.appWithdrawalPercentage}%{withdrawalAmount?.paystackFee > 0 ? " + " + formatCurrency(withdrawalAmount?.paystackFee) : ""} of {formatCurrency(+withdrawalAmount?.amount_entered || 0)}</Typography>
 											</View>
 
 											<Pressable style={{ gap: spacingY._10 }} onPress={() => amountInputRef.current?.focus()}>
@@ -432,9 +473,18 @@ export default function WalletScreen() {
 										<Button
 											onPress={() => {
 												setWithdrawalSteps(1);
-												setWithdrawalAmount({ amount_entered: "", amount_to_pay: "" });
+												setWithdrawalAmount({
+													amount_entered: "",
+													amount_to_pay: "",
+													paystackFee: 0,
+													totalDeduction: 0,
+													appPercentage: 0,
+													appProfit: 0,
+													referrerGain: 0
+												});
 											}}
 											style={{ flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: spacingX._15, backgroundColor: BaseColors[currentTheme == "dark" ? "primaryAccent" : "accent"]  }}
+											disabled={loading?.process}
 										>
 											<Typography fontFamily="urbanist-semibold" size={22} color={BaseColors.primaryLight}>Cancel</Typography>
 										</Button>

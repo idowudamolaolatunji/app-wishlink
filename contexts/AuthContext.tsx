@@ -4,6 +4,7 @@ import { createWallet } from "@/services/walletService";
 import { generateSlug } from "@/utils/helpers";
 import { savePushToken } from "@/utils/pushToken";
 import { AuthContextType, UserType } from "@/utils/types";
+import Constants from 'expo-constants';
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
@@ -54,12 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode}> = function({ c
                 (async function() {
                     const data = await getStoredUserData();
 
-                    // if(data?.email) {
-                    //     router.replace("/(auth)/login")
-                    // } else {
-                    //     router.replace("/(auth)/welcome")
-                    // }
-                    router.replace("/(auth)/welcome")
+                    if(data?.email) {
+                        router.replace("/(auth)/login");
+                    } else {
+                        router.replace("/(auth)/welcome");
+                    }
+                    // router.replace("/(auth)/welcome")
                 })();
             }
         }, handleFirebaseError);
@@ -139,7 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode}> = function({ c
             }
 
             let response = await createUserWithEmailAndPassword(auth, email, password);
-            const newToken = await Notifications.getExpoPushTokenAsync();
+		    const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+            const newToken = await Notifications.getExpoPushTokenAsync({ projectId });
 
             await setDoc(doc(firestore, "users", response?.user?.uid), {
                 name,
